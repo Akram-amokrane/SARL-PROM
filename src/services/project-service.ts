@@ -17,4 +17,18 @@ export default class ProjectService {
         return Promise.resolve<Project[]>(val ?? [])
     }
 
+    async addProject(p: Project) {
+        await this.dbStore.connect()
+        await this.dbStore.db?.execute(
+            `INSERT INTO projects(label,type,description) VAlUES ($1,$2,$3)`,
+            [p.label, p.type, p.description]
+        )
+            .catch((e) => {
+                console.log(e)
+            })
+        await this.dbStore.disconnect()
+    }
+
+
+
 }

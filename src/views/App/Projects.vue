@@ -84,7 +84,7 @@
     </div>
     <Sheet :show="showAdd" v-model:close="showAdd">
       <div>
-        <!-- <PatientsForm /> -->
+        <ProjectForm />
       </div>
     </Sheet>
   </div>
@@ -99,7 +99,7 @@ import Row from '@/components/table/Row.vue'
 import ColItem from '@/components/table/ColItem.vue'
 import ButtonIcon from '@/components/buttons/ButtonIcon.vue'
 import Sheet from '@/layouts/Sheet.vue'
-import PatientsForm from '@/components/forms/PatientsForm.vue'
+import ProjectForm from '@/components/forms/ProjectForm.vue'
 
 // Icons
 import TrashIcon from '@/components/icons/TrashIcon.vue'
@@ -116,7 +116,7 @@ import FemaleIcon from '@/components/icons/FemaleIcon.vue'
 
 const projectsStore = useProjectsStore()
 
-const showAdd = ref(false)
+const showAdd = ref(true)
 
 onMounted(() => {
   projectsStore.getAllProjects()

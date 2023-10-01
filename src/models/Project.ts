@@ -1,8 +1,8 @@
 class Project {
     id?: number;
     label!: string;
-    description?: string | null;
-    type!: string | null;
+    description?: string;
+    type!: string;
     nombreBien?: number
 
 }

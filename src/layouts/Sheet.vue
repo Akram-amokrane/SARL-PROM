@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed flex flex-col justify-start items-center min-w-[40%] min-h-[300px] bg-slate-200 bottom-0 left-1/2 -translate-x-1/2 rounded-t-lg drop-shadow-xl duration-200 origin-bottom"
+    class="fixed flex flex-col justify-start items-center min-w-[40%] min-h-[300px] bg-slate-100 bottom-0 left-1/2 -translate-x-1/2 rounded-t-lg drop-shadow-xl duration-200 origin-bottom"
     :class="{
       'scale-y-0': !show
     }"
@@ -11,7 +11,7 @@
         @click.self="emit('update:close', false)"
       />
     </div>
-    <div class="w-full h-auto">
+    <div class="w-full h-auto px-2">
       <slot></slot>
     </div>
   </div>

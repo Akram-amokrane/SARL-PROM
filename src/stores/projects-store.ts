@@ -14,11 +14,6 @@ export const useProjectsStore = defineStore('projectsStore', () => {
         tableData.value = projects.value.map((p: Project) => new RowData<Project>(p));
     }, { deep: true })
 
-    async function getAllProjects() {
-        projectService.getAllProjects().then((p) => {
-            projects.value = p;
-        })
-    }
 
 
 
@@ -34,7 +29,17 @@ export const useProjectsStore = defineStore('projectsStore', () => {
         });
     }
 
+    async function getAllProjects() {
+        projectService.getAllProjects().then((p) => {
+            projects.value = p;
+        })
+    }
+
+    async function addProject(p: Project) {
+        projectService.addProject(p)
+        getAllProjects()
+    }
 
 
-    return { tableData, selectedCount, getAllProjects, toggleRowChecked, checkAll }
+    return { tableData, selectedCount, getAllProjects, addProject, toggleRowChecked, checkAll }
 })
