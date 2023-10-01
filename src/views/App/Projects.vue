@@ -1,0 +1,124 @@
+<template>
+  <div class="w-full h-full flex justify-start items-start relative overflow-hidden">
+    <div class="w-[calc(100%-64px)] max-h-full flex flex-col gap-2 overflow-hidden">
+      <div
+        class="flex justify-between items-center w-full h-16 min-h-[64px] p-3 bg-white dark:bg-gray-800 rounded-md drop-shadow-md overflow-x-hidden overflow-hidden"
+      >
+        <h2 class="text-2xl font-semibold dark:text-white">Projets</h2>
+        <div>
+          <Search />
+        </div>
+        <div>
+          <ToggleGroup group="gender" :options="['all', 'Male', 'Female']" init="all">
+            <template #all>
+              <DotIcon class="w-5 h-5" />
+            </template>
+            <template #Male>
+              <MaleIcon class="w-5 h-4" />
+            </template>
+            <template #Female>
+              <FemaleIcon class="w-5 h-5" />
+            </template>
+          </ToggleGroup>
+        </div>
+      </div>
+
+      <div
+        class="w-full h-full p-3 bg-white dark:bg-gray-800 rounded-md drop-shadow-md overflow-x-hidden overflow-y-auto"
+      >
+        <Table
+          @checkedAll="(v) => projectsStore.checkAll(v)"
+          :all="projectsStore.selectedCount == projectsStore.tableData.length"
+        >
+          <template #header>
+            <Column>Label</Column>
+            <Column>Type</Column>
+            <Column>Description</Column>
+            <Column>Nombre de Biens</Column>
+            <Column></Column>
+          </template>
+          <template #body>
+            <Row
+              v-for="{ data, checked } in projectsStore.tableData"
+              :key="data.id"
+              :selected="checked"
+              @toggleRowChecked="projectsStore.toggleRowChecked(data.id!)"
+              ref="rowsRef"
+            >
+              <ColItem> {{ data.label }}</ColItem>
+              <ColItem>{{ data.type }} </ColItem>
+              <ColItem>{{ data.description }} </ColItem>
+              <ColItem>{{ data.nombreBien }} </ColItem>
+              <ColItem>
+                <div class="flex justify-center items-center gap-2">
+                  <ButtonIcon class="p-1 hover:bg-purple-100">
+                    <EditIcon class="w-6 h-6 p-0.5 fill-purple-500" />
+                  </ButtonIcon>
+                  <ButtonIcon class="p-1 hover:bg-blue-100">
+                    <DataIcon class="w-6 h-6 fill-blue-600 dark:fill-blue-200" />
+                  </ButtonIcon>
+                </div>
+              </ColItem>
+            </Row>
+          </template>
+        </Table>
+      </div>
+    </div>
+    <div
+      class="w-16 h-full py-3 gap-4 bg-white dark:bg-gray-800 flex flex-col justify-start items-center drop-shadow-md absolute -right-2 rounded-l-lg"
+    >
+      <ButtonIcon class="p-2 bg-green-100 dark:bg-green-800" @click="showAdd = !showAdd">
+        <AddIcon class="w-6 h-6 fill-green-600 dark:fill-green-200" />
+      </ButtonIcon>
+      <ButtonIcon
+        class="p-2 bg-red-100 dark:bg-red-800 relative"
+        :disabled="projectsStore.selectedCount == 0"
+      >
+        <span
+          v-show="projectsStore.selectedCount > 0"
+          class="absolute flex justify-center items-center rounded-full w-4 h-4 -top-1 -right-1 bg-red-600 text-white text-xs"
+          >{{ projectsStore.selectedCount }}</span
+        >
+        <TrashIcon class="w-6 h-6 fill-red-600 dark:fill-red-200" />
+      </ButtonIcon>
+    </div>
+    <Sheet :show="showAdd" v-model:close="showAdd">
+      <div>
+        <!-- <PatientsForm /> -->
+      </div>
+    </Sheet>
+  </div>
+</template>
+
+<script setup lang="ts">
+// Components
+import Table from '@/components/table/Table.vue'
+import TableHeader from '@/components/table/TableHeader.vue'
+import Column from '@/components/table/Column.vue'
+import Row from '@/components/table/Row.vue'
+import ColItem from '@/components/table/ColItem.vue'
+import ButtonIcon from '@/components/buttons/ButtonIcon.vue'
+import Sheet from '@/layouts/Sheet.vue'
+import PatientsForm from '@/components/forms/PatientsForm.vue'
+
+// Icons
+import TrashIcon from '@/components/icons/TrashIcon.vue'
+import AddIcon from '@/components/icons/AddIcon.vue'
+import EditIcon from '@/components/icons/EditIcon.vue'
+import DataIcon from '@/components/icons/DataIcon.vue'
+import { useProjectsStore } from '@/stores/projects-store'
+import { onMounted, ref } from 'vue'
+import Search from '@/components/Search.vue'
+import ToggleGroup from '@/components/inputs/ToggleGroup.vue'
+import DotIcon from '@/components/icons/DotIcon.vue'
+import MaleIcon from '@/components/icons/MaleIcon.vue'
+import FemaleIcon from '@/components/icons/FemaleIcon.vue'
+
+const projectsStore = useProjectsStore()
+
+const showAdd = ref(false)
+
+onMounted(() => {
+  projectsStore.getAllProjects()
+})
+</script>
