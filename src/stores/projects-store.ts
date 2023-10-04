@@ -9,6 +9,8 @@ export const useProjectsStore = defineStore('projectsStore', () => {
     const projectService = new ProjectService()
     const tableData = ref<RowData<Project>[]>([])
     const selectedCount = computed(() => (tableData.value.filter((row) => row.checked)).length)
+    const selectedProjectIds = computed(() => (tableData.value.filter((row) => row.checked).map((row) => row.data.id)))
+
 
     watch(projects, (n, o) => {
         tableData.value = projects.value.map((p: Project) => new RowData<Project>(p));
@@ -36,10 +38,22 @@ export const useProjectsStore = defineStore('projectsStore', () => {
     }
 
     async function addProject(p: Project) {
-        projectService.addProject(p)
-        getAllProjects()
+        await projectService.addProject(p)
+        await getAllProjects()
+    }
+
+    async function editProject(p: Project) {
+        await projectService.editProject(p)
+        await getAllProjects();
+    }
+
+    async function deleteProjects() {
+        selectedProjectIds.value.forEach(async (id) => {
+            await projectService.deleteProjects(id as number);
+        })
+        await getAllProjects();
     }
 
 
-    return { tableData, selectedCount, getAllProjects, addProject, toggleRowChecked, checkAll }
+    return { tableData, selectedCount, getAllProjects, addProject, editProject, deleteProjects, toggleRowChecked, checkAll }
 })

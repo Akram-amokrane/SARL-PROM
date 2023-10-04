@@ -8,7 +8,7 @@ export const useDbStore = defineStore('dbStore', () => {
 
     async function connect() {
         db.value = await Database.load("sqlite:data.db");
-        console.log("database connection : ", db.value);
+
     }
 
     async function disconnect() {

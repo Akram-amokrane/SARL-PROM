@@ -9,6 +9,7 @@
     >
       <WindowBar />
       <div class="w-full h-[calc(100%-32px)] p-2 overflow-y-auto overflow-x-hidden">
+        <Notification />
         <RouterView />
       </div>
     </div>
@@ -18,6 +19,7 @@
 <script setup lang="ts">
 import NavBar from '@/components/NavBar.vue'
 import WindowBar from '@/components/WindowBar.vue'
+import Notification from '@/components/notification/Notification.vue'
 import { useAppStore } from '@/stores/app-store'
 import { useDbStore } from '@/stores/db-store'
 import { onMounted } from 'vue'

@@ -3,6 +3,8 @@ export interface IValidator {
     error: string | null
 }
 
+
+
 export function minLength(min: number) {
     function isValid(v: string): IValidator {
         return v.length >= min ? { valid: true, error: null } : { valid: false, error: `Must Have at least ${min} character` }

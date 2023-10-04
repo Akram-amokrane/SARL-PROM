@@ -1,5 +1,5 @@
 <template>
-  <form>
+  <div>
     <div>
       <TextField
         label="Label"
@@ -28,14 +28,14 @@
     </div>
     <div class="w-full flex justify-center items-center gap-3 p-3 mt-2">
       <Button
-        @click.prevent="resetForm"
+        @click.prevent.stop="resetForm"
         :icon="true"
         class="w-1/2 text-slate-600 bg-slate-300 hover:bg-slate-400"
       >
         Annuler
       </Button>
       <Button
-        @click.prevent="saveClient"
+        @click.stop.prevent="saveClient"
         :icon="true"
         class="w-1/2 text-white bg-blue-600 hover:bg-blue-700"
         :disabled="!formIsValid()"
@@ -43,7 +43,7 @@
         Ajouter
       </Button>
     </div>
-  </form>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -51,35 +51,37 @@ import { minLength } from '@/utils/validators'
 import TextField from '../inputs/TextField.vue'
 import TextArea from '../inputs/TextArea.vue'
 import Button from '../buttons/Button.vue'
-import { ref } from 'vue'
+import { onMounted, onUpdated, ref, watch } from 'vue'
 import Project from '@/models/Project'
 import { useProjectsStore } from '@/stores/projects-store'
 
+const props = defineProps({
+  p: { type: Object, required: true }
+})
+
 const projectsStore = useProjectsStore()
 
-const project = ref<Project>({
-  label: '',
-  type: '',
-  description: ''
-})
+const project = ref<Project>(props.p as Project)
+
+const project0 = JSON.parse(JSON.stringify(props.p))
+
 const formValid = ref({
-  label: false,
-  type: false,
+  label: true,
+  type: true,
   description: true
 })
 
 function resetForm() {
-  project.value = {
-    label: '',
-    type: '',
-    description: ''
-  }
+  console.log(project.value)
+  project.value = project0
 
   formValid.value = {
-    label: false,
-    type: false,
+    label: true,
+    type: true,
     description: true
   }
+
+  console.log(project.value)
 }
 
 function formIsValid(): boolean {
@@ -89,9 +91,7 @@ function formIsValid(): boolean {
 
 async function saveClient() {
   if (formIsValid()) {
-    projectsStore.addProject(project.value).then(() => {
-      resetForm()
-    })
+    projectsStore.editProject(project.value)
   }
 }
 </script>

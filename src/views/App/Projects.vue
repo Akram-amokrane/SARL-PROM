@@ -51,7 +51,10 @@
               <ColItem>{{ data.nombreBien }} </ColItem>
               <ColItem>
                 <div class="flex justify-center items-center gap-2">
-                  <ButtonIcon class="p-1 hover:bg-purple-100">
+                  <ButtonIcon
+                    class="p-1 hover:bg-purple-100"
+                    @click.prevent.stop="showEditSheet(data)"
+                  >
                     <EditIcon class="w-6 h-6 p-0.5 fill-purple-500" />
                   </ButtonIcon>
                   <ButtonIcon class="p-1 hover:bg-blue-100">
@@ -67,12 +70,13 @@
     <div
       class="w-16 h-full py-3 gap-4 bg-white dark:bg-gray-800 flex flex-col justify-start items-center drop-shadow-md absolute -right-2 rounded-l-lg"
     >
-      <ButtonIcon class="p-2 bg-green-100 dark:bg-green-800" @click="showAdd = !showAdd">
+      <ButtonIcon class="p-2 bg-green-100 dark:bg-green-800" @click="showAddSheet()">
         <AddIcon class="w-6 h-6 fill-green-600 dark:fill-green-200" />
       </ButtonIcon>
       <ButtonIcon
         class="p-2 bg-red-100 dark:bg-red-800 relative"
         :disabled="projectsStore.selectedCount == 0"
+        @click.stop="deleteProject()"
       >
         <span
           v-show="projectsStore.selectedCount > 0"
@@ -87,19 +91,25 @@
         <ProjectForm />
       </div>
     </Sheet>
+
+    <Sheet v-if="showEdit" :show="showEdit" v-model:close="showEdit">
+      <div>
+        <ProjectEditForm :p="projectEdit" />
+      </div>
+    </Sheet>
   </div>
 </template>
 
 <script setup lang="ts">
 // Components
 import Table from '@/components/table/Table.vue'
-import TableHeader from '@/components/table/TableHeader.vue'
 import Column from '@/components/table/Column.vue'
 import Row from '@/components/table/Row.vue'
 import ColItem from '@/components/table/ColItem.vue'
 import ButtonIcon from '@/components/buttons/ButtonIcon.vue'
 import Sheet from '@/layouts/Sheet.vue'
 import ProjectForm from '@/components/forms/ProjectForm.vue'
+import ProjectEditForm from '@/components/forms/ProjectEditForm.vue'
 
 // Icons
 import TrashIcon from '@/components/icons/TrashIcon.vue'
@@ -113,10 +123,42 @@ import ToggleGroup from '@/components/inputs/ToggleGroup.vue'
 import DotIcon from '@/components/icons/DotIcon.vue'
 import MaleIcon from '@/components/icons/MaleIcon.vue'
 import FemaleIcon from '@/components/icons/FemaleIcon.vue'
+import type Project from '@/models/Project'
+
+//tauri
+import { confirm } from '@tauri-apps/api/dialog'
 
 const projectsStore = useProjectsStore()
 
-const showAdd = ref(true)
+const showAdd = ref(false)
+const showEdit = ref(false)
+const projectEdit = ref<Project>({
+  label: '',
+  type: '',
+  description: ''
+})
+
+function showEditSheet(p: Project) {
+  if (!showEdit.value) {
+    projectEdit.value = JSON.parse(JSON.stringify(p))
+    showEdit.value = true
+    console.log(p)
+  }
+}
+
+async function deleteProject() {
+  const confirmed = await confirm(
+    `Êtes-vous sûr de vouloir supprimer ces ${projectsStore.selectedCount} projets? Cette action est irréversible et entraînera la perte de toutes les données associées à ces projets, y compris les biens qui lui sont liés.`,
+    { okLabel: 'Supprimer', cancelLabel: 'Annuler' }
+  )
+  if (confirmed) {
+    await projectsStore.deleteProjects()
+  }
+}
+
+function showAddSheet() {
+  showAdd.value = true
+}
 
 onMounted(() => {
   projectsStore.getAllProjects()

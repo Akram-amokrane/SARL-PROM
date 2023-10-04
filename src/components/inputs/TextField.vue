@@ -34,6 +34,7 @@
             checkIfValid(e)
           }
         "
+        @change="(e) => sendVAlue(e)"
         :required="props.required"
         :value="value"
       />
@@ -48,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { ref } from 'vue'
 import ErrorIcon from '@/components/icons/ErrorIcon.vue'
 import type { IValidator } from '@/utils/validators'
 
@@ -57,32 +58,42 @@ const props = defineProps({
   placeholder: String,
   required: { type: Boolean, default: false },
   icon: { type: Boolean, default: false },
-  validators: { type: Array<(v: string) => IValidator> },
+  validators: { type: Array<(v: string) => IValidator>, default: [] },
   value: { type: String, default: '' }
 })
 
-const emit = defineEmits(['update:value'])
+const emit = defineEmits(['update:value', 'update:isValid'])
 
 const state = ref<'normal' | 'focus' | 'error'>('normal')
 const error = ref<string | null>()
+const isValid = ref(props.validators.length == 0)
+
+function sendVAlue(e: Event) {
+  let value = (e.target as HTMLInputElement).value
+  emit('update:value', value)
+}
 
 function checkIfValid(e: Event) {
   let value = (e.target as HTMLInputElement).value
-  if (props.validators && value.length > 0) {
+  if (props.validators?.length > 0) {
     for (let i = 0; i < props.validators.length; i++) {
       let v = props.validators[i](value)
       if (!v.valid) {
         state.value = 'error'
         error.value = v.error
+        isValid.value = false
+        emit('update:isValid', isValid.value)
         break
       } else {
         state.value = 'normal'
         error.value = null
+        isValid.value = true
+        emit('update:isValid', isValid.value)
       }
     }
-    if (state.value == 'normal') {
-      emit('update:value', value)
-    }
+  } else {
+    emit('update:value', value)
+    emit('update:isValid', isValid.value)
   }
 }
 </script>

@@ -6,8 +6,8 @@ import Settings from '@/views/App/settings.vue'
 import Biens from '@/views/App/Biens.vue'
 import Clients from '@/views/App/Clients.vue'
 import Projects from '@/views/App/Projects.vue'
-import dialogs from '@/views/Dialogs/dialogs.vue'
 import splash from '@/views/Splash/splash.vue'
+import dialogs from '@/views/Dialogs/dialogs.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -54,15 +54,16 @@ const router = createRouter({
       ]
     },
     {
-      path: '/dialogs',
-      name: 'dialogs',
-      component: dialogs
-    },
-    {
       path: '/splash',
       name: 'splash',
       component: splash
-    }
+    },
+    {
+      path: '/dialogs',
+      name: 'dialogs',
+      component: dialogs,
+
+    },
   ]
 })
 
