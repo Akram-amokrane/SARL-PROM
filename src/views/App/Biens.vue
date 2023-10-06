@@ -1,7 +1,175 @@
 <template>
-  <div>Appointements</div>
+  <div class="w-full h-full flex justify-start items-start relative overflow-hidden">
+    <div class="w-[calc(100%-64px)] max-h-full flex flex-col gap-2 overflow-hidden">
+      <div
+        class="flex justify-between items-center w-full h-16 min-h-[64px] p-3 bg-white dark:bg-gray-800 rounded-md drop-shadow-md overflow-x-hidden overflow-hidden"
+      >
+        <h2 class="text-2xl font-semibold dark:text-white">Biens</h2>
+        <div>
+          <Search />
+        </div>
+        <div>
+          <ToggleGroup group="gender" :options="['all', 'Male', 'Female']" init="all">
+            <template #all>
+              <DotIcon class="w-5 h-5" />
+            </template>
+            <template #Male>
+              <MaleIcon class="w-5 h-4" />
+            </template>
+            <template #Female>
+              <FemaleIcon class="w-5 h-5" />
+            </template>
+          </ToggleGroup>
+        </div>
+      </div>
+
+      <div
+        class="w-full h-full p-3 bg-white dark:bg-gray-800 rounded-md drop-shadow-md overflow-x-hidden overflow-y-auto"
+      >
+        <Table
+          @checkedAll="(v) => biensStore.checkAll(v)"
+          :all="biensStore.selectedCount == biensStore.tableData.length"
+        >
+          <template #header>
+            <Column>Projet</Column>
+            <Column>Ilot</Column>
+            <Column>Lot</Column>
+            <Column>Bloc</Column>
+            <Column>Port</Column>
+            <Column>Etage</Column>
+            <Column>Type</Column>
+            <Column>Superficier Habitable</Column>
+            <Column>Superficier Utile</Column>
+            <Column>Cout M2</Column>
+            <Column>Montant</Column>
+            <Column>Etat</Column>
+          </template>
+          <template #body>
+            <Row
+              v-for="{ data, checked } in biensStore.tableData"
+              :key="data.id"
+              :selected="checked"
+              @toggleRowChecked="biensStore.toggleRowChecked(data.id!)"
+              ref="rowsRef"
+            >
+              <ColItem> {{ data.projectLabel }}</ColItem>
+              <ColItem align="right">{{ data.ilot }} </ColItem>
+              <ColItem align="right">{{ data.lot }} </ColItem>
+              <ColItem>{{ data.bloc }} </ColItem>
+              <ColItem align="right">{{ data.port }}</ColItem>
+              <ColItem align="right">{{ data.etage }}</ColItem>
+              <ColItem>{{ data.type }}</ColItem>
+              <ColItem align="right">{{ data.supHab }}</ColItem>
+              <ColItem align="right">{{ data.supUtil }}</ColItem>
+              <ColItem align="right">{{ data.coutM2 }}</ColItem>
+              <ColItem align="right">{{ data.montant }}</ColItem>
+              <ColItem>{{ data.etat }}</ColItem>
+              <ColItem>
+                <div class="flex justify-center items-center gap-2">
+                  <ButtonIcon
+                    class="p-1 hover:bg-purple-100"
+                    @click.prevent.stop="showEditSheet(data)"
+                  >
+                    <EditIcon class="w-6 h-6 p-0.5 fill-purple-500" />
+                  </ButtonIcon>
+                  <ButtonIcon class="p-1 hover:bg-blue-100">
+                    <DataIcon class="w-6 h-6 fill-blue-600 dark:fill-blue-200" />
+                  </ButtonIcon>
+                </div>
+              </ColItem>
+            </Row>
+          </template>
+        </Table>
+      </div>
+    </div>
+    <div
+      class="w-16 h-full py-3 gap-4 bg-white dark:bg-gray-800 flex flex-col justify-start items-center drop-shadow-md absolute -right-2 rounded-l-lg"
+    >
+      <ButtonIcon class="p-2 bg-green-100 dark:bg-green-800" @click="showAddDrawer()">
+        <AddIcon class="w-6 h-6 fill-green-600 dark:fill-green-200" />
+      </ButtonIcon>
+      <ButtonIcon
+        class="p-2 bg-red-100 dark:bg-red-800 relative"
+        :disabled="biensStore.selectedCount == 0"
+        @click.stop="deleteBien()"
+      >
+        <span
+          v-show="biensStore.selectedCount > 0"
+          class="absolute flex justify-center items-center rounded-full w-4 h-4 -top-1 -right-1 bg-red-600 text-white text-xs"
+          >{{ biensStore.selectedCount }}</span
+        >
+        <TrashIcon class="w-6 h-6 fill-red-600 dark:fill-red-200" />
+      </ButtonIcon>
+    </div>
+    <Drawer from="right" :show="showAdd" @close="showAdd = false">
+      <div>
+        <BienForm></BienForm>
+      </div>
+    </Drawer>
+  </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+// Components
+import Table from '@/components/table/Table.vue'
+import Column from '@/components/table/Column.vue'
+import Row from '@/components/table/Row.vue'
+import ColItem from '@/components/table/ColItem.vue'
+import ButtonIcon from '@/components/buttons/ButtonIcon.vue'
 
-<style scoped></style>
+// Icons
+import TrashIcon from '@/components/icons/TrashIcon.vue'
+import AddIcon from '@/components/icons/AddIcon.vue'
+import EditIcon from '@/components/icons/EditIcon.vue'
+import DataIcon from '@/components/icons/DataIcon.vue'
+import { useBiensStore } from '@/stores/biens-store'
+import { onMounted, ref } from 'vue'
+import Search from '@/components/Search.vue'
+import ToggleGroup from '@/components/inputs/ToggleGroup.vue'
+import DotIcon from '@/components/icons/DotIcon.vue'
+import MaleIcon from '@/components/icons/MaleIcon.vue'
+import FemaleIcon from '@/components/icons/FemaleIcon.vue'
+import type Project from '@/models/Project'
+
+//tauri
+import { confirm } from '@tauri-apps/api/dialog'
+import type Bien from '@/models/Bien'
+import Drawer from '@/layouts/Drawer.vue'
+import BienForm from '@/components/forms/BienForm.vue'
+
+const biensStore = useBiensStore()
+
+const showAdd = ref(false)
+const showEdit = ref(false)
+const bienEdit = ref<Project>({
+  label: '',
+  type: '',
+  description: ''
+})
+
+function showEditSheet(p: Bien) {
+  if (!showEdit.value) {
+    bienEdit.value = JSON.parse(JSON.stringify(p))
+    showEdit.value = true
+    console.log(p)
+  }
+}
+
+async function deleteBien() {
+  const confirmed = await confirm(
+    `Êtes-vous sûr de vouloir supprimer ces ${biensStore.selectedCount} biens? Cette action est irréversible et entraînera la perte de toutes les données associées à ces biens.`,
+    { okLabel: 'Supprimer', cancelLabel: 'Annuler' }
+  )
+  if (confirmed) {
+    await biensStore.deleteBiens()
+  }
+}
+
+function showAddDrawer() {
+  showAdd.value = true
+}
+
+onMounted(() => {
+  biensStore.getAllBiens()
+})
+</script>

@@ -1,17 +1,18 @@
 class Bien {
     id?: number;
-    projectId?: number | null;
-    ilot?: number | null;
-    lot?: number | null;
-    bloc?: string | null;
-    port?: string;
-    etage?: number | null;
-    type?: string | null;
-    supHab?: number | null;
-    supUtil?: number | null;
-    coutM2?: number | null;
-    montant?: number | null;
-    etat?: string | null;
+    projectId?: number;
+    projectLabel?: string;
+    ilot?: number;
+    lot?: number;
+    bloc?: string;
+    port?: number;
+    etage?: number;
+    type?: string;
+    supHab?: number;
+    supUtil?: number;
+    coutM2?: number;
+    montant?: number;
+    etat?: string;
 
 
 }

@@ -2,10 +2,10 @@
   <div
     class="absolute min-w-[380px] -h-full bg-white dark:bg-slate-800 drop-shadow-xl z-50 duration-300 overflow-hidden"
     :class="{
-      'top-0 right-0 h-full origin-right rounded-l-lg border-l-2 border-l-blue-500 dark:border-l-blue-900':
+      'top-0 right-0 h-full origin-right rounded-l-lg border-l-2 border-l-orange-400 ':
         props.from == 'right',
       'top-0 left-0 h-full origin-left': props.from == 'left',
-      'scale-x-0': !props.show,
+      'scale-x-0': !props.show
     }"
   >
     <div class="w-full h-full">
@@ -23,16 +23,16 @@
 </template>
 
 <script setup lang="ts">
-import { XMarkIcon } from "@heroicons/vue/24/outline";
+import { XMarkIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
   show: { type: Boolean, required: true },
-  from: { type: String, default: "left" },
-});
+  from: { type: String, default: 'left' }
+})
 
-const emit = defineEmits(["update:close"]);
+const emit = defineEmits(['close'])
 
 function closeDrawer() {
-  emit("update:close", false);
+  emit('close', false)
 }
 </script>

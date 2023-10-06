@@ -1,7 +1,8 @@
 import type Project from "@/models/Project";
 import { useDbStore } from "@/stores/db-store";
 import { useNotificationStore } from "@/stores/notification-store";
-import type Database from "tauri-plugin-sql-api";
+import ComboOption from '@/models/ComboOption'
+
 
 export default class ProjectService {
     private dbStore = useDbStore();
@@ -13,10 +14,18 @@ export default class ProjectService {
 
     async getAllProjects(): Promise<Project[]> {
         await this.dbStore.connect()
-        const val = await this.dbStore.db?.select<Project[]>(`SELECT p.*,count(biens.project_id) as nombreBien FROM projects as p LEFT JOIN biens ON p.id = biens.project_id GROUP BY p.id`, [])
+        const val = await this.dbStore.db?.select<Project[]>(`SELECT p.*,count(biens.projectId) as nombreBien FROM projects as p LEFT JOIN biens ON p.id = biens.projectId GROUP BY p.id`, [])
         await this.dbStore.disconnect()
         console.log(val)
         return Promise.resolve<Project[]>(val ?? [])
+    }
+
+    async getProjectToCombo(): Promise<ComboOption[]> {
+        await this.dbStore.connect()
+        const val = await this.dbStore.db?.select<ComboOption[]>(`SELECT id as value,label  FROM projects`, [])
+        await this.dbStore.disconnect()
+        console.log(val)
+        return Promise.resolve<ComboOption[]>(val ?? [])
     }
 
     async addProject(p: Project) {

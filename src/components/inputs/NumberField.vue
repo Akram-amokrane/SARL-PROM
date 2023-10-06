@@ -2,7 +2,7 @@
   <div class="w-full h-auto">
     <label
       v-if="props.label"
-      class="text-xs pl-1 font-semibold"
+      class="flex text-xs pl-1 font-semibold"
       :class="{
         'text-slate-700 dark:text-slate-200': state == 'normal',
         'text-red-400 dark:text-red-700': state == 'error',
@@ -17,14 +17,15 @@
       >
         <slot name="icon"></slot>
       </div>
-      <textarea
+      <input
+        type="number"
         :placeholder="props.placeholder"
-        class="w-full min-h-[64px] resize-y border-0 dark:focus:bg-slate-600 text-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400 rounded-md focus:border focus:border-blue-600 dark:border-blue-800"
+        class="w-full border-0 text-right placeholder:text-left dark:focus:bg-slate-600 text-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400 rounded-md focus:border focus:border-blue-600 dark:border-blue-800"
         :class="{
           'pl-9': props.icon,
-          'p-2': !props.icon,
+          'px-2 py-2': !props.icon,
           'bg-slate-200 dark:bg-slate-700': state == 'normal',
-          'bg-red-50 border-2 border-red-500 ': state == 'error'
+          ' border-2 border-red-500 dark:border-red-700 dark:bg-slate-700': state == 'error'
         }"
         @focus="state = 'focus'"
         @blur="
@@ -34,6 +35,7 @@
           }
         "
         @change="(e) => sendVAlue(e)"
+        :required="props.required"
         :value="value"
       />
     </div>
@@ -47,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import ErrorIcon from '@/components/icons/ErrorIcon.vue'
 import type { IValidator } from '@/utils/validators'
 import { StarIcon } from '@heroicons/vue/24/outline'
@@ -55,10 +57,10 @@ import { StarIcon } from '@heroicons/vue/24/outline'
 const props = defineProps({
   label: String,
   placeholder: String,
+  required: { type: Boolean, default: false },
   icon: { type: Boolean, default: false },
   validators: { type: Array<(v: string) => IValidator>, default: [] },
-  required: { type: Boolean, default: false },
-  value: { type: String, default: '' }
+  value: { type: Number, default: null }
 })
 
 const emit = defineEmits(['update:value', 'update:isValid'])

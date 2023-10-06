@@ -2,14 +2,14 @@
   <div class="w-full h-auto">
     <label
       v-if="props.label"
-      class="text-xs pl-1 font-semibold"
+      class="flex text-xs pl-1 font-semibold"
       :class="{
         'text-slate-700 dark:text-slate-200': state == 'normal',
         'text-red-400 dark:text-red-700': state == 'error',
         'text-blue-600 dark:text-blue-800': state == 'focus'
       }"
-      >{{ props.label }}</label
-    >
+      >{{ props.label }}<StarIcon v-if="required" class="w-2 h-2 fill-red-500 text-white"
+    /></label>
     <div class="relative flex justify-start items-center">
       <div
         v-if="props.icon"
@@ -53,6 +53,7 @@ import { ref } from 'vue'
 import ErrorIcon from '@/components/icons/ErrorIcon.vue'
 import type { IValidator } from '@/utils/validators'
 
+import { StarIcon } from '@heroicons/vue/24/outline'
 const props = defineProps({
   label: String,
   placeholder: String,
