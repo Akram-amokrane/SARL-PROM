@@ -7,6 +7,7 @@
         :options="biensStore.projectOptions"
         :required="true"
         v-model:value="bien.projectId"
+        v-model:is-valid="formValid.projectId"
       ></ComboBox>
       <div class="max-w-sm flex justify-start items-center gap-1">
         <NumberField
@@ -123,7 +124,7 @@ import { useBiensStore } from '@/stores/biens-store'
 
 const biensStore = useBiensStore()
 
-const bien = ref<Bien>({})
+const bien = ref<Bien>({ etat: 'Disponible' })
 const formValid = ref({
   projectId: false,
   ilot: false,
@@ -136,7 +137,7 @@ const formValid = ref({
   supUtil: false,
   coutM2: false,
   montant: false,
-  etat: false
+  etat: true
 })
 
 function resetForm() {
@@ -171,21 +172,20 @@ watch(bien.value, (n, o) => {
 function formIsValid(): boolean {
   const { projectId, ilot, lot, bloc, port, etage, type, supHab, supUtil, coutM2, montant, etat } =
     formValid.value
-  // return (
-  //   projectId &&
-  //   ilot &&
-  //   lot &&
-  //   bloc &&
-  //   port &&
-  //   etage &&
-  //   type &&
-  //   supHab &&
-  //   supUtil &&
-  //   coutM2 &&
-  //   montant &&
-  //   etat
-  // )
-  return true
+  return (
+    projectId &&
+    ilot &&
+    lot &&
+    bloc &&
+    port &&
+    etage &&
+    type &&
+    supHab &&
+    supUtil &&
+    coutM2 &&
+    montant &&
+    etat
+  )
 }
 
 async function saveBien() {
@@ -194,7 +194,6 @@ async function saveBien() {
       resetForm()
     })
   }
-  console.log(bien.value)
 }
 
 onMounted(() => {

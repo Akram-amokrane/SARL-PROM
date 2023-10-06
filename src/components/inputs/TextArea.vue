@@ -2,7 +2,7 @@
   <div class="w-full h-auto">
     <label
       v-if="props.label"
-      class="text-xs pl-1 font-semibold"
+      class="flex text-xs pl-1 font-semibold"
       :class="{
         'text-slate-700 dark:text-slate-200': state == 'normal',
         'text-red-400 dark:text-red-700': state == 'error',

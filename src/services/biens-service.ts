@@ -1,4 +1,4 @@
-import type Bien from "@/models/Bien";
+import Bien from "@/models/Bien";
 import { useDbStore } from "@/stores/db-store";
 import { useNotificationStore } from "@/stores/notification-store";
 
@@ -14,7 +14,6 @@ export default class BiensService {
         await this.dbStore.connect()
         const val = await this.dbStore.db?.select<Bien[]>(`SELECT biens.*,projects.label as projectLabel FROM biens LEFT JOIN projects ON biens.projectId = projects.id`, [])
         await this.dbStore.disconnect()
-        console.log(val)
         return Promise.resolve<Bien[]>(val ?? [])
     }
 

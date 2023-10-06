@@ -72,7 +72,6 @@ const formValid = ref({
 })
 
 function resetForm() {
-  console.log(project.value)
   project.value = project0
 
   formValid.value = {

@@ -7,6 +7,8 @@
         :options="biensStore.projectOptions"
         :required="true"
         v-model:value="bien.projectId"
+        v-model:is-valid="formValid.projectId"
+        :val="bien.projectId"
       ></ComboBox>
       <div class="max-w-sm flex justify-start items-center gap-1">
         <NumberField
@@ -105,14 +107,13 @@
         class="w-1/2 text-white bg-blue-600 hover:bg-blue-700"
         :disabled="!formIsValid()"
       >
-        Ajouter
+        Modifier
       </Button>
     </div>
   </form>
 </template>
 
 <script setup lang="ts">
-import { minLength } from '@/utils/validators'
 import TextField from '../inputs/TextField.vue'
 import NumberField from '../inputs/NumberField.vue'
 import ComboBox from '../inputs/ComboBox.vue'
@@ -120,40 +121,48 @@ import Button from '../buttons/Button.vue'
 import { onMounted, ref, watch } from 'vue'
 import Bien from '@/models/Bien'
 import { useBiensStore } from '@/stores/biens-store'
+import { useNotificationStore } from '@/stores/notification-store'
+
+const props = defineProps({
+  b: { type: Object, required: true }
+})
 
 const biensStore = useBiensStore()
+const notStore = useNotificationStore()
 
-const bien = ref<Bien>({})
+const bien = ref<Bien>(props.b as Bien)
+const bien0 = JSON.parse(JSON.stringify(props.b)) as Bien
+
 const formValid = ref({
-  projectId: false,
-  ilot: false,
-  lot: false,
-  bloc: false,
-  port: false,
-  etage: false,
-  type: false,
-  supHab: false,
-  supUtil: false,
-  coutM2: false,
-  montant: false,
-  etat: false
+  projectId: true,
+  ilot: true,
+  lot: true,
+  bloc: true,
+  port: true,
+  etage: true,
+  type: true,
+  supHab: true,
+  supUtil: true,
+  coutM2: true,
+  montant: true,
+  etat: true
 })
 
 function resetForm() {
-  bien.value = {} as Bien
+  bien.value = bien0
 
   formValid.value = {
-    projectId: false,
-    ilot: false,
-    lot: false,
-    bloc: false,
-    port: false,
-    etage: false,
-    type: false,
-    supHab: false,
-    supUtil: false,
-    coutM2: false,
-    montant: false,
+    projectId: true,
+    ilot: true,
+    lot: true,
+    bloc: true,
+    port: true,
+    etage: true,
+    type: true,
+    supHab: true,
+    supUtil: true,
+    coutM2: true,
+    montant: true,
     etat: true
   }
 }
@@ -171,30 +180,28 @@ watch(bien.value, (n, o) => {
 function formIsValid(): boolean {
   const { projectId, ilot, lot, bloc, port, etage, type, supHab, supUtil, coutM2, montant, etat } =
     formValid.value
-  // return (
-  //   projectId &&
-  //   ilot &&
-  //   lot &&
-  //   bloc &&
-  //   port &&
-  //   etage &&
-  //   type &&
-  //   supHab &&
-  //   supUtil &&
-  //   coutM2 &&
-  //   montant &&
-  //   etat
-  // )
-  return true
+  return (
+    projectId &&
+    ilot &&
+    lot &&
+    bloc &&
+    port &&
+    etage &&
+    type &&
+    supHab &&
+    supUtil &&
+    coutM2 &&
+    montant &&
+    etat
+  )
 }
 
 async function saveBien() {
   if (formIsValid()) {
-    biensStore.addBien(bien.value).then(() => {
+    biensStore.editBien(bien.value).then(() => {
       resetForm()
     })
   }
-  console.log(bien.value)
 }
 
 onMounted(() => {

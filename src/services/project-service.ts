@@ -16,7 +16,6 @@ export default class ProjectService {
         await this.dbStore.connect()
         const val = await this.dbStore.db?.select<Project[]>(`SELECT p.*,count(biens.projectId) as nombreBien FROM projects as p LEFT JOIN biens ON p.id = biens.projectId GROUP BY p.id`, [])
         await this.dbStore.disconnect()
-        console.log(val)
         return Promise.resolve<Project[]>(val ?? [])
     }
 
@@ -24,7 +23,6 @@ export default class ProjectService {
         await this.dbStore.connect()
         const val = await this.dbStore.db?.select<ComboOption[]>(`SELECT id as value,label  FROM projects`, [])
         await this.dbStore.disconnect()
-        console.log(val)
         return Promise.resolve<ComboOption[]>(val ?? [])
     }
 

@@ -1,9 +1,28 @@
 <template>
   <div class="w-full h-full flex justify-start items-start relative overflow-hidden">
     <div class="w-[calc(100%-64px)] max-h-full flex flex-col gap-2 overflow-hidden">
-      <TableHeader
-        class="w-full h-16 min-h-[64px] p-3 bg-white dark:bg-gray-800 rounded-md drop-shadow-md overflow-x-hidden overflow-hidden"
-      />
+      <div
+        class="flex justify-between items-center w-full h-16 min-h-[64px] p-3 bg-white dark:bg-gray-800 rounded-md drop-shadow-md overflow-x-hidden overflow-hidden"
+      >
+        <h2 class="text-2xl font-semibold dark:text-white">Clients</h2>
+        <div>
+          <Search />
+        </div>
+        <div>
+          <ToggleGroup group="gender" :options="['all', 'Male', 'Female']" init="all">
+            <template #all>
+              <DotIcon class="w-5 h-5" />
+            </template>
+            <template #Male>
+              <MaleIcon class="w-5 h-4" />
+            </template>
+            <template #Female>
+              <FemaleIcon class="w-5 h-5" />
+            </template>
+          </ToggleGroup>
+        </div>
+      </div>
+
       <div
         class="w-full h-full p-3 bg-white dark:bg-gray-800 rounded-md drop-shadow-md overflow-x-hidden overflow-y-auto"
       >
@@ -13,34 +32,46 @@
         >
           <template #header>
             <Column>Nom</Column>
-            <Column>Date de naissance</Column>
-            <Column>Lieu de naissance</Column>
+            <Column>Prénom</Column>
+            <Column>Date de Naissance</Column>
+            <Column>Lieu de Naissance</Column>
+            <Column>Adresse</Column>
             <Column>Telephone</Column>
             <Column>Email</Column>
-            <Column>Adresse</Column>
-            <Column></Column>
+            <Column>note</Column>
           </template>
           <template #body>
             <Row
               v-for="{ data, checked } in clientsStore.tableData"
               :key="data.id"
               :selected="checked"
-              @toggleRowChecked="(id) => clientsStore.toggleRowChecked(id)"
+              @toggleRowChecked="clientsStore.toggleRowChecked(data.id!)"
               ref="rowsRef"
             >
-              <ColItem> {{ data.nom }} {{ data.prenom }}</ColItem>
+              <ColItem> {{ data.nom }}</ColItem>
+              <ColItem>{{ data.prenom }}</ColItem>
               <ColItem>{{ data.dateNaissance }} </ColItem>
               <ColItem>{{ data.lieuNaissance }} </ColItem>
+              <ColItem class="">{{ data.adresse }} </ColItem>
               <ColItem>{{ data.telephone }}</ColItem>
-              <ColItem>{{ data.email }} </ColItem>
-              <ColItem>{{ data.adresse }} </ColItem>
+              <ColItem>{{ data.email }}</ColItem>
+              <ColItem>
+                <div class="relative">
+                  <DocumentTextIcon class="peer w-5 h-5 text-slate-600" />
+                  <div
+                    class="absolute w-52 bottom-full right-2 hidden peer-hover:block bg-yellow-200 p-1 flex justify-center items-center"
+                  >
+                    {{ data.note }}
+                  </div>
+                </div>
+              </ColItem>
               <ColItem>
                 <div class="flex justify-center items-center gap-2">
-                  <ButtonIcon class="p-1 hover:bg-purple-100">
-                    <EditIcon class="w-6 h-6 p-0.5 fill-purple-500" />
-                  </ButtonIcon>
-                  <ButtonIcon class="p-1 hover:bg-blue-100">
-                    <DataIcon class="w-6 h-6 fill-blue-600 dark:fill-blue-200" />
+                  <ButtonIcon
+                    class="p-1 hover:bg-blue-100"
+                    @click.prevent.stop="showEditDrawer(data)"
+                  >
+                    <EditIcon class="w-6 h-6 p-0.5 fill-blue-600" />
                   </ButtonIcon>
                 </div>
               </ColItem>
@@ -52,12 +83,13 @@
     <div
       class="w-16 h-full py-3 gap-4 bg-white dark:bg-gray-800 flex flex-col justify-start items-center drop-shadow-md absolute -right-2 rounded-l-lg"
     >
-      <ButtonIcon class="p-2 bg-green-100 dark:bg-green-800" @click="showAdd = !showAdd">
+      <ButtonIcon class="p-2 bg-green-100 dark:bg-green-800" @click="showAddDrawer()">
         <AddIcon class="w-6 h-6 fill-green-600 dark:fill-green-200" />
       </ButtonIcon>
       <ButtonIcon
         class="p-2 bg-red-100 dark:bg-red-800 relative"
         :disabled="clientsStore.selectedCount == 0"
+        @click.stop="deleteClient()"
       >
         <span
           v-show="clientsStore.selectedCount > 0"
@@ -67,9 +99,19 @@
         <TrashIcon class="w-6 h-6 fill-red-600 dark:fill-red-200" />
       </ButtonIcon>
     </div>
-    <Drawer :show="showAdd" from="right" v-model:close="showAdd">
+    <Drawer from="right" :show="showAdd && !showEdit" @close="showAdd = false">
       <div>
-        <PatientsForm />
+        <ClientForm></ClientForm>
+      </div>
+    </Drawer>
+    <Drawer
+      from="right"
+      v-if="showEdit && clientEdit && !showAdd"
+      :show="showEdit && clientEdit && !showAdd"
+      @close="showEdit = false"
+    >
+      <div>
+        <ClientEditForm :b="clientEdit"></ClientEditForm>
       </div>
     </Drawer>
   </div>
@@ -78,24 +120,61 @@
 <script setup lang="ts">
 // Components
 import Table from '@/components/table/Table.vue'
-import TableHeader from '@/components/table/TableHeader.vue'
 import Column from '@/components/table/Column.vue'
 import Row from '@/components/table/Row.vue'
 import ColItem from '@/components/table/ColItem.vue'
 import ButtonIcon from '@/components/buttons/ButtonIcon.vue'
-import Drawer from '@/layouts/Drawer.vue'
-import PatientsForm from '@/components/forms/PatientsForm.vue'
 
 // Icons
 import TrashIcon from '@/components/icons/TrashIcon.vue'
 import AddIcon from '@/components/icons/AddIcon.vue'
 import EditIcon from '@/components/icons/EditIcon.vue'
 import DataIcon from '@/components/icons/DataIcon.vue'
-import { ref } from 'vue'
 import { useClientsStore } from '@/stores/clients-store'
+import { onMounted, ref } from 'vue'
+import Search from '@/components/Search.vue'
+import ToggleGroup from '@/components/inputs/ToggleGroup.vue'
+import DotIcon from '@/components/icons/DotIcon.vue'
+import MaleIcon from '@/components/icons/MaleIcon.vue'
+import FemaleIcon from '@/components/icons/FemaleIcon.vue'
+import type Project from '@/models/Project'
+
+//tauri
+import { confirm } from '@tauri-apps/api/dialog'
+import Client from '@/models/Client'
+import Drawer from '@/layouts/Drawer.vue'
+import ClientForm from '@/components/forms/ClientForm.vue'
+import ClientEditForm from '@/components/forms/ClientEditForm.vue'
+import { DocumentPlusIcon, DocumentTextIcon } from '@heroicons/vue/24/outline'
 
 const clientsStore = useClientsStore()
 
 const showAdd = ref(false)
+const showEdit = ref(false)
+const clientEdit = ref<Client>({})
+
+function showEditDrawer(p: Client) {
+  if (!showEdit.value) {
+    clientEdit.value = JSON.parse(JSON.stringify(p)) as Client
+    showEdit.value = true
+  }
+}
+
+async function deleteClient() {
+  const confirmed = await confirm(
+    `Êtes-vous sûr de vouloir supprimer ces ${clientsStore.selectedCount} clients? Cette action est irréversible et entraînera la perte de toutes les données associées à ces clients.`,
+    { okLabel: 'Supprimer', cancelLabel: 'Annuler' }
+  )
+  if (confirmed) {
+    await clientsStore.deleteClients()
+  }
+}
+
+function showAddDrawer() {
+  showAdd.value = true
+}
+
+onMounted(() => {
+  clientsStore.getAllClients()
+})
 </script>
-@/stores/projects-store @/stores/clients-store

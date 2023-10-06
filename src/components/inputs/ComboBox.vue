@@ -81,9 +81,9 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronUpIcon, ChevronDownIcon, StarIcon } from '@heroicons/vue/24/outline'
+import { ChevronDownIcon, StarIcon } from '@heroicons/vue/24/outline'
 import ComboOption from '@/models/ComboOption'
-import { onMounted, ref, toRef, watch } from 'vue'
+import { onMounted, ref, toRef } from 'vue'
 import ErrorIcon from '../icons/ErrorIcon.vue'
 
 const props = defineProps({
@@ -91,21 +91,28 @@ const props = defineProps({
   label: { type: String },
   placeholder: String,
   icon: { type: Boolean, default: false },
-  required: { type: Boolean, default: false }
+  required: { type: Boolean, default: false },
+  val: { type: Number }
 })
 
-const emit = defineEmits(['update:value'])
+const emit = defineEmits(['update:value', 'update:isValid'])
 
 const state = ref<'normal' | 'focus' | 'error'>('normal')
 const error = ref<string | null>()
 const opts = toRef(props, 'options') //ref<Array<ComboOption>>(props.options)
 const selectedOpt = ref<ComboOption>()
 const showSelection = ref(false)
-const search = ref('')
 
 function setSelectedOpt(opt: ComboOption) {
   selectedOpt.value = opt
   showSelection.value = false
   emit('update:value', selectedOpt.value.value)
+  emit('update:isValid', true)
 }
+
+onMounted(() => {
+  if (props.val) {
+    setSelectedOpt(opts.value.find((o) => o.value == props.val)!)
+  }
+})
 </script>

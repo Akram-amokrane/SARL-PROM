@@ -38,8 +38,8 @@
             <Column>Port</Column>
             <Column>Etage</Column>
             <Column>Type</Column>
-            <Column>Superficier Habitable</Column>
-            <Column>Superficier Utile</Column>
+            <Column>S.Habitable</Column>
+            <Column>S.Utile</Column>
             <Column>Cout M2</Column>
             <Column>Montant</Column>
             <Column>Etat</Column>
@@ -67,13 +67,10 @@
               <ColItem>
                 <div class="flex justify-center items-center gap-2">
                   <ButtonIcon
-                    class="p-1 hover:bg-purple-100"
-                    @click.prevent.stop="showEditSheet(data)"
+                    class="p-1 hover:bg-blue-100"
+                    @click.prevent.stop="showEditDrawer(data)"
                   >
-                    <EditIcon class="w-6 h-6 p-0.5 fill-purple-500" />
-                  </ButtonIcon>
-                  <ButtonIcon class="p-1 hover:bg-blue-100">
-                    <DataIcon class="w-6 h-6 fill-blue-600 dark:fill-blue-200" />
+                    <EditIcon class="w-6 h-6 p-0.5 fill-blue-600" />
                   </ButtonIcon>
                 </div>
               </ColItem>
@@ -101,9 +98,19 @@
         <TrashIcon class="w-6 h-6 fill-red-600 dark:fill-red-200" />
       </ButtonIcon>
     </div>
-    <Drawer from="right" :show="showAdd" @close="showAdd = false">
+    <Drawer from="right" :show="showAdd && !showEdit" @close="showAdd = false">
       <div>
         <BienForm></BienForm>
+      </div>
+    </Drawer>
+    <Drawer
+      from="right"
+      v-if="showEdit && bienEdit && !showAdd"
+      :show="showEdit && bienEdit && !showAdd"
+      @close="showEdit = false"
+    >
+      <div>
+        <BienEditForm :b="bienEdit"></BienEditForm>
       </div>
     </Drawer>
   </div>
@@ -136,22 +143,18 @@ import { confirm } from '@tauri-apps/api/dialog'
 import type Bien from '@/models/Bien'
 import Drawer from '@/layouts/Drawer.vue'
 import BienForm from '@/components/forms/BienForm.vue'
+import BienEditForm from '@/components/forms/BienEditForm.vue'
 
 const biensStore = useBiensStore()
 
 const showAdd = ref(false)
 const showEdit = ref(false)
-const bienEdit = ref<Project>({
-  label: '',
-  type: '',
-  description: ''
-})
+const bienEdit = ref<Bien>({})
 
-function showEditSheet(p: Bien) {
+function showEditDrawer(p: Bien) {
   if (!showEdit.value) {
-    bienEdit.value = JSON.parse(JSON.stringify(p))
+    bienEdit.value = JSON.parse(JSON.stringify(p)) as Bien
     showEdit.value = true
-    console.log(p)
   }
 }
 

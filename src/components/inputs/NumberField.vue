@@ -59,7 +59,7 @@ const props = defineProps({
   placeholder: String,
   required: { type: Boolean, default: false },
   icon: { type: Boolean, default: false },
-  validators: { type: Array<(v: string) => IValidator>, default: [] },
+  validators: { type: Array<(v: number) => IValidator>, default: [] },
   value: { type: Number, default: null }
 })
 
@@ -70,12 +70,12 @@ const error = ref<string | null>()
 const isValid = ref(props.validators.length == 0)
 
 function sendVAlue(e: Event) {
-  let value = (e.target as HTMLInputElement).value
+  let value = (e.target as HTMLInputElement).valueAsNumber
   emit('update:value', value)
 }
 
 function checkIfValid(e: Event) {
-  let value = (e.target as HTMLInputElement).value
+  let value = (e.target as HTMLInputElement).valueAsNumber
   if (props.validators?.length > 0) {
     for (let i = 0; i < props.validators.length; i++) {
       let v = props.validators[i](value)
