@@ -1,25 +1,15 @@
 <template>
   <div class="w-full h-full flex justify-start items-start relative overflow-hidden">
-    <div class="w-[calc(100%-64px)] max-h-full flex flex-col gap-2 overflow-hidden">
+    <div class="w-[calc(100%-64px)] max-h-full flex flex-col gap-2">
       <div
-        class="flex justify-between items-center w-full h-16 min-h-[64px] p-3 bg-white dark:bg-gray-800 rounded-md drop-shadow-md overflow-x-hidden overflow-hidden"
+        class="flex z-10 justify-between items-center w-full h-16 min-h-[64px] p-3 bg-white dark:bg-gray-800 rounded-md drop-shadow-md"
       >
         <h2 class="text-2xl font-semibold dark:text-white">Projets</h2>
         <div>
-          <Search />
+          <Search @search="(s) => search(s)" />
         </div>
         <div>
-          <ToggleGroup group="gender" :options="['all', 'Male', 'Female']" init="all">
-            <template #all>
-              <DotIcon class="w-5 h-5" />
-            </template>
-            <template #Male>
-              <MaleIcon class="w-5 h-4" />
-            </template>
-            <template #Female>
-              <FemaleIcon class="w-5 h-5" />
-            </template>
-          </ToggleGroup>
+          <ProjectsFilter></ProjectsFilter>
         </div>
       </div>
 
@@ -127,6 +117,7 @@ import type Project from '@/models/Project'
 
 //tauri
 import { confirm } from '@tauri-apps/api/dialog'
+import ProjectsFilter from '@/components/filter/ProjectsFilter.vue'
 
 const projectsStore = useProjectsStore()
 
@@ -142,8 +133,11 @@ function showEditSheet(p: Project) {
   if (!showEdit.value) {
     projectEdit.value = JSON.parse(JSON.stringify(p))
     showEdit.value = true
-    console.log(p)
   }
+}
+
+async function search(str: string) {
+  await projectsStore.search(str)
 }
 
 async function deleteProject() {

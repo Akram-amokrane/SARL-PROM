@@ -2,6 +2,7 @@ import type Project from "@/models/Project";
 import { useDbStore } from "@/stores/db-store";
 import { useNotificationStore } from "@/stores/notification-store";
 import ComboOption from '@/models/ComboOption'
+import type { ProjectFilter } from "@/models/Filters";
 
 
 export default class ProjectService {
@@ -15,6 +16,24 @@ export default class ProjectService {
     async getAllProjects(): Promise<Project[]> {
         await this.dbStore.connect()
         const val = await this.dbStore.db?.select<Project[]>(`SELECT p.*,count(biens.projectId) as nombreBien FROM projects as p LEFT JOIN biens ON p.id = biens.projectId GROUP BY p.id`, [])
+        await this.dbStore.disconnect()
+        return Promise.resolve<Project[]>(val ?? [])
+    }
+
+    async filterProjects(f: ProjectFilter): Promise<Project[]> {
+        await this.dbStore.connect()
+        const val = await this.dbStore.db?.select<Project[]>(
+            `SELECT p.*,count(biens.projectId) as nombreBien 
+            FROM projects as p 
+            LEFT JOIN biens ON p.id = biens.projectId 
+            WHERE ${f.label ? `p.label LIKE '%${f.label}%'` : 1}
+            AND ${f.description ? `p.description LIKE '%${f.description}%'` : 1}
+            AND ${f.type ? `p.type='${f.type}%'` : 1}
+            AND ${f.nombreBien.min ? `nombreBien>=${f.nombreBien.min}` : 1}
+            AND ${f.nombreBien.max ? `nombreBien<=${f.nombreBien.max}` : 1}
+            GROUP BY p.id`,
+            []
+        )
         await this.dbStore.disconnect()
         return Promise.resolve<Project[]>(val ?? [])
     }

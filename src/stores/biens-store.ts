@@ -5,6 +5,7 @@ import BiensService from "@/services/biens-service"
 import type Bien from '@/models/Bien'
 import ProjectService from '@/services/project-service'
 import type ComboOption from '@/models/ComboOption'
+import type { BienFilter } from '@/models/Filters'
 
 export const useBiensStore = defineStore('biensStore', () => {
     const biens = ref<Bien[]>([])
@@ -19,6 +20,12 @@ export const useBiensStore = defineStore('biensStore', () => {
         tableData.value = biens.value.map((p: Bien) => new RowData<Bien>(p));
     }, { deep: true })
 
+
+    function search(str: string) {
+        tableData.value = biens.value.filter((p: Bien) => {
+            return `${p.projectLabel} ${p.bloc} ${p.type} ${p.etat}`.toLowerCase().includes(str)
+        }).map((p: Bien) => new RowData<Bien>(p));
+    }
 
 
 
@@ -39,6 +46,13 @@ export const useBiensStore = defineStore('biensStore', () => {
             biens.value = p;
         })
     }
+
+    async function filterBiens(filter: BienFilter) {
+        biensService.filterBiens(filter).then((b) => {
+            biens.value = b
+        })
+    }
+
 
     async function getProjectsCombo() {
         projectService.getProjectToCombo().then((p) => {
@@ -65,5 +79,5 @@ export const useBiensStore = defineStore('biensStore', () => {
 
 
 
-    return { tableData, selectedCount, projectOptions, getAllBiens, addBien, editBien, deleteBiens, toggleRowChecked, checkAll, getProjectsCombo }
+    return { tableData, selectedCount, projectOptions, search, getAllBiens, filterBiens, addBien, editBien, deleteBiens, toggleRowChecked, checkAll, getProjectsCombo }
 })

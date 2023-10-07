@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import Client from '@/models/Client'
 import RowData from '@/models/RowData'
 import ClientsService from '@/services/clients-service'
+import type { ClientFilter } from '@/models/Filters'
 
 export const useClientsStore = defineStore('clientsStore', () => {
     const clients = ref<Client[]>([])
@@ -17,7 +18,11 @@ export const useClientsStore = defineStore('clientsStore', () => {
     }, { deep: true })
 
 
-
+    function search(str: string) {
+        tableData.value = clients.value.filter((p: Client) => {
+            return `${p.nom} ${p.prenom} ${p.adresse} ${p.telephone} ${p.email} ${p.note}`.toLowerCase().includes(str)
+        }).map((p: Client) => new RowData<Client>(p));
+    }
 
     function toggleRowChecked(id: number) {
         tableData.value = tableData.value.map((row) =>
@@ -37,7 +42,11 @@ export const useClientsStore = defineStore('clientsStore', () => {
         })
     }
 
-
+    async function filterClients(filter: ClientFilter) {
+        clientsService.filterBiens(filter).then((b) => {
+            clients.value = b
+        })
+    }
 
     async function addClient(p: Client) {
         await clientsService.addClient(p)
@@ -58,5 +67,5 @@ export const useClientsStore = defineStore('clientsStore', () => {
 
 
 
-    return { tableData, selectedCount, getAllClients, addClient, editClient, deleteClients, toggleRowChecked, checkAll }
+    return { tableData, selectedCount, search, getAllClients, filterClients, addClient, editClient, deleteClients, toggleRowChecked, checkAll }
 })

@@ -1,4 +1,4 @@
 export default class ComboOption {
-    value!: string | number
+    value?: string | number
     label?: string | number
 }

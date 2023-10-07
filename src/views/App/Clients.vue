@@ -1,25 +1,15 @@
 <template>
   <div class="w-full h-full flex justify-start items-start relative overflow-hidden">
-    <div class="w-[calc(100%-64px)] max-h-full flex flex-col gap-2 overflow-hidden">
+    <div class="w-[calc(100%-64px)] max-h-full flex flex-col gap-2">
       <div
-        class="flex justify-between items-center w-full h-16 min-h-[64px] p-3 bg-white dark:bg-gray-800 rounded-md drop-shadow-md overflow-x-hidden overflow-hidden"
+        class="flex justify-between z-10 items-center w-full h-16 min-h-[64px] p-3 bg-white dark:bg-gray-800 rounded-md drop-shadow-md"
       >
         <h2 class="text-2xl font-semibold dark:text-white">Clients</h2>
         <div>
-          <Search />
+          <Search @search="(e) => search(e)" />
         </div>
         <div>
-          <ToggleGroup group="gender" :options="['all', 'Male', 'Female']" init="all">
-            <template #all>
-              <DotIcon class="w-5 h-5" />
-            </template>
-            <template #Male>
-              <MaleIcon class="w-5 h-4" />
-            </template>
-            <template #Female>
-              <FemaleIcon class="w-5 h-5" />
-            </template>
-          </ToggleGroup>
+          <ClientsFilter />
         </div>
       </div>
 
@@ -146,6 +136,7 @@ import Drawer from '@/layouts/Drawer.vue'
 import ClientForm from '@/components/forms/ClientForm.vue'
 import ClientEditForm from '@/components/forms/ClientEditForm.vue'
 import { DocumentPlusIcon, DocumentTextIcon } from '@heroicons/vue/24/outline'
+import ClientsFilter from '@/components/filter/ClientsFilter.vue'
 
 const clientsStore = useClientsStore()
 
@@ -158,6 +149,10 @@ function showEditDrawer(p: Client) {
     clientEdit.value = JSON.parse(JSON.stringify(p)) as Client
     showEdit.value = true
   }
+}
+
+async function search(str: string) {
+  await clientsStore.search(str)
 }
 
 async function deleteClient() {

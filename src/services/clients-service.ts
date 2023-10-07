@@ -1,4 +1,5 @@
 import type Client from "@/models/Client";
+import type { ClientFilter } from "@/models/Filters";
 import { useDbStore } from "@/stores/db-store";
 import { useNotificationStore } from "@/stores/notification-store";
 
@@ -13,6 +14,21 @@ export default class ClientsService {
     async getAllClients(): Promise<Client[]> {
         await this.dbStore.connect()
         const val = await this.dbStore.db?.select<Client[]>(`SELECT *  FROM clients `, [])
+        await this.dbStore.disconnect()
+        return Promise.resolve<Client[]>(val ?? [])
+    }
+
+    async filterBiens(f: ClientFilter): Promise<Client[]> {
+        await this.dbStore.connect()
+        const val = await this.dbStore.db?.select<Client[]>(
+            `SELECT *  FROM clients 
+            WHERE ${f.nom ? `nom LIKE '%${f.nom}%'` : 1} 
+            AND ${f.prenom ? `prenom LIKE '%${f.prenom}%'` : 1}
+            AND ${f.lieuNaissance ? `lieuNaissance LIKE '%${f.lieuNaissance}%'` : 1}
+            AND ${f.telephone ? `telephone LIKE '${f.telephone}%'` : 1}
+            AND ${f.email ? `email LIKE '${f.email}%'` : 1}`,
+            []
+        )
         await this.dbStore.disconnect()
         return Promise.resolve<Client[]>(val ?? [])
     }

@@ -1,25 +1,15 @@
 <template>
   <div class="w-full h-full flex justify-start items-start relative overflow-hidden">
-    <div class="w-[calc(100%-64px)] max-h-full flex flex-col gap-2 overflow-hidden">
+    <div class="w-[calc(100%-64px)] max-h-full flex flex-col gap-2">
       <div
-        class="flex justify-between items-center w-full h-16 min-h-[64px] p-3 bg-white dark:bg-gray-800 rounded-md drop-shadow-md overflow-x-hidden overflow-hidden"
+        class="flex z-10 justify-between items-center w-full h-16 min-h-[64px] p-3 bg-white dark:bg-gray-800 rounded-md drop-shadow-md"
       >
         <h2 class="text-2xl font-semibold dark:text-white">Biens</h2>
         <div>
-          <Search />
+          <Search @search="(s) => search(s)" />
         </div>
         <div>
-          <ToggleGroup group="gender" :options="['all', 'Male', 'Female']" init="all">
-            <template #all>
-              <DotIcon class="w-5 h-5" />
-            </template>
-            <template #Male>
-              <MaleIcon class="w-5 h-4" />
-            </template>
-            <template #Female>
-              <FemaleIcon class="w-5 h-5" />
-            </template>
-          </ToggleGroup>
+          <BiensFilter></BiensFilter>
         </div>
       </div>
 
@@ -51,6 +41,9 @@
               :selected="checked"
               @toggleRowChecked="biensStore.toggleRowChecked(data.id!)"
               ref="rowsRef"
+              :class="{
+                'bg-red-100': data.etat == 'Reserver'
+              }"
             >
               <ColItem> {{ data.projectLabel }}</ColItem>
               <ColItem align="right">{{ data.ilot }} </ColItem>
@@ -123,20 +116,15 @@ import Column from '@/components/table/Column.vue'
 import Row from '@/components/table/Row.vue'
 import ColItem from '@/components/table/ColItem.vue'
 import ButtonIcon from '@/components/buttons/ButtonIcon.vue'
+import BiensFilter from '@/components/filter/BiensFilter.vue'
 
 // Icons
 import TrashIcon from '@/components/icons/TrashIcon.vue'
 import AddIcon from '@/components/icons/AddIcon.vue'
 import EditIcon from '@/components/icons/EditIcon.vue'
-import DataIcon from '@/components/icons/DataIcon.vue'
 import { useBiensStore } from '@/stores/biens-store'
 import { onMounted, ref } from 'vue'
 import Search from '@/components/Search.vue'
-import ToggleGroup from '@/components/inputs/ToggleGroup.vue'
-import DotIcon from '@/components/icons/DotIcon.vue'
-import MaleIcon from '@/components/icons/MaleIcon.vue'
-import FemaleIcon from '@/components/icons/FemaleIcon.vue'
-import type Project from '@/models/Project'
 
 //tauri
 import { confirm } from '@tauri-apps/api/dialog'
@@ -156,6 +144,10 @@ function showEditDrawer(p: Bien) {
     bienEdit.value = JSON.parse(JSON.stringify(p)) as Bien
     showEdit.value = true
   }
+}
+
+async function search(str: string) {
+  await biensStore.search(str)
 }
 
 async function deleteBien() {

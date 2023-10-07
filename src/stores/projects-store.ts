@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import RowData from '@/models/RowData'
 import ProjectService from "@/services/project-service"
 import type Project from '@/models/Project'
+import type { ProjectFilter } from '@/models/Filters'
 
 export const useProjectsStore = defineStore('projectsStore', () => {
     const projects = ref<Project[]>([])
@@ -17,7 +18,11 @@ export const useProjectsStore = defineStore('projectsStore', () => {
     }, { deep: true })
 
 
-
+    function search(str: string) {
+        tableData.value = projects.value.filter((p: Project) => {
+            return `${p.label} ${p.description} ${p.type}`.toLowerCase().includes(str)
+        }).map((p: Project) => new RowData<Project>(p));
+    }
 
     function toggleRowChecked(id: number) {
         tableData.value = tableData.value.map((row) =>
@@ -34,6 +39,12 @@ export const useProjectsStore = defineStore('projectsStore', () => {
     async function getAllProjects() {
         projectService.getAllProjects().then((p) => {
             projects.value = p;
+        })
+    }
+
+    function filterProjects(filter: ProjectFilter) {
+        projectService.filterProjects(filter).then((b) => {
+            projects.value = b
         })
     }
 
@@ -55,5 +66,5 @@ export const useProjectsStore = defineStore('projectsStore', () => {
     }
 
 
-    return { tableData, selectedCount, getAllProjects, addProject, editProject, deleteProjects, toggleRowChecked, checkAll }
+    return { tableData, selectedCount, search, getAllProjects, filterProjects, addProject, editProject, deleteProjects, toggleRowChecked, checkAll }
 })
