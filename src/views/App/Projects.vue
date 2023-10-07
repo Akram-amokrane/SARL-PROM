@@ -109,10 +109,6 @@ import DataIcon from '@/components/icons/DataIcon.vue'
 import { useProjectsStore } from '@/stores/projects-store'
 import { onMounted, ref } from 'vue'
 import Search from '@/components/Search.vue'
-import ToggleGroup from '@/components/inputs/ToggleGroup.vue'
-import DotIcon from '@/components/icons/DotIcon.vue'
-import MaleIcon from '@/components/icons/MaleIcon.vue'
-import FemaleIcon from '@/components/icons/FemaleIcon.vue'
 import type Project from '@/models/Project'
 
 //tauri

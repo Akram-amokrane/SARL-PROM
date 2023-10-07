@@ -49,7 +49,7 @@
                 <div class="relative">
                   <DocumentTextIcon class="peer w-5 h-5 text-slate-600" />
                   <div
-                    class="absolute w-52 bottom-full right-2 hidden peer-hover:block bg-yellow-200 p-1 flex justify-center items-center"
+                    class="absolute w-52 bottom-full right-2 hidden peer-hover:block bg-yellow-200 p-2 justify-center items-center"
                   >
                     {{ data.note }}
                   </div>
@@ -119,15 +119,9 @@ import ButtonIcon from '@/components/buttons/ButtonIcon.vue'
 import TrashIcon from '@/components/icons/TrashIcon.vue'
 import AddIcon from '@/components/icons/AddIcon.vue'
 import EditIcon from '@/components/icons/EditIcon.vue'
-import DataIcon from '@/components/icons/DataIcon.vue'
 import { useClientsStore } from '@/stores/clients-store'
 import { onMounted, ref } from 'vue'
 import Search from '@/components/Search.vue'
-import ToggleGroup from '@/components/inputs/ToggleGroup.vue'
-import DotIcon from '@/components/icons/DotIcon.vue'
-import MaleIcon from '@/components/icons/MaleIcon.vue'
-import FemaleIcon from '@/components/icons/FemaleIcon.vue'
-import type Project from '@/models/Project'
 
 //tauri
 import { confirm } from '@tauri-apps/api/dialog'
@@ -135,7 +129,7 @@ import Client from '@/models/Client'
 import Drawer from '@/layouts/Drawer.vue'
 import ClientForm from '@/components/forms/ClientForm.vue'
 import ClientEditForm from '@/components/forms/ClientEditForm.vue'
-import { DocumentPlusIcon, DocumentTextIcon } from '@heroicons/vue/24/outline'
+import { DocumentTextIcon } from '@heroicons/vue/24/outline'
 import ClientsFilter from '@/components/filter/ClientsFilter.vue'
 
 const clientsStore = useClientsStore()
