@@ -56,7 +56,8 @@ export default class BiensService {
                 this.notification.show(`Bien ajouter avec succés.`, "Succes")
             })
             .catch((e: Error) => {
-                this.notification.show(e.message, "Error")
+                this.notification.show("Erreur dans la base de données", "Error")
+                console.error(e)
             })
         await this.dbStore.disconnect()
     }

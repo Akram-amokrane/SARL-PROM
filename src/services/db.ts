@@ -65,7 +65,7 @@ export default class DBCreator {
             coutM2 REAL,
             montant REAL,
             etat TEXT,
-            FOREIGN KEY (project_id) REFERENCES project(id)
+            FOREIGN KEY (projectId) REFERENCES projects(id)
         );`;
         await this.dbStore.db?.execute(query).catch((e) => {
             console.error(e);

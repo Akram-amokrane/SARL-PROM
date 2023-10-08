@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-full flex flex-col justify-start items-center gap-2">
     <div class="w-full flex justify-start items-end gap-1">
-      <TextField label="Type" placeholder="Industriel" v-model:value="newType.label"></TextField>
+      <TextField label="Type" placeholder="villa" v-model:value="newType.label"></TextField>
       <ButtonIcon
         @click="addType"
         class="p-2 rounded-md bg-green-100 hover:bg-green-200 duration-200"

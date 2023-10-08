@@ -14,6 +14,7 @@
       </div>
 
       <div
+        v-show="biensStore.tableData.length > 0"
         class="w-full h-full p-3 bg-white dark:bg-gray-800 rounded-md drop-shadow-md overflow-x-hidden overflow-y-auto"
       >
         <Table
@@ -70,6 +71,15 @@
             </Row>
           </template>
         </Table>
+      </div>
+      <div
+        class="mt-28 w-full h-full flex flex-col justify-center items-center"
+        v-show="!(biensStore.tableData.length > 0)"
+      >
+        <NoData class="w-72 h-72" />
+        <p class="text-xl text-slate-400 inline-block w-72 text-center">
+          La base de données est vide cliquer sur (+) pour ajouter
+        </p>
       </div>
     </div>
     <div
@@ -137,6 +147,7 @@ import type Bien from '@/models/Bien'
 import Drawer from '@/layouts/Drawer.vue'
 import BienForm from '@/components/forms/BienForm.vue'
 import BienEditForm from '@/components/forms/BienEditForm.vue'
+import NoData from '@/components/icons/NoData.vue'
 
 const biensStore = useBiensStore()
 
