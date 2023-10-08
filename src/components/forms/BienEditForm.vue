@@ -52,14 +52,15 @@
         >
         </NumberField>
       </div>
-      <TextField
+      <ComboBox
         label="Type"
-        placeholder=""
+        placeholder="appartement"
+        :options="biensStore.bienTypes"
         :required="true"
         v-model:value="bien.type"
         v-model:is-valid="formValid.type"
-      >
-      </TextField>
+        :valstr="bien.type"
+      ></ComboBox>
       <NumberField
         label="Superficier Habitable"
         placeholder=""
@@ -92,6 +93,15 @@
         v-model:is-valid="formValid.coutM2"
       >
       </NumberField>
+      <ComboBox
+        label="Etat"
+        placeholder="Dispobile"
+        :options="biensStore.bienEtats"
+        :required="true"
+        v-model:value="bien.etat"
+        v-model:is-valid="formValid.etat"
+        :valstr="bien.etat"
+      ></ComboBox>
     </div>
     <div class="w-full flex justify-center items-center gap-3 p-3 mt-2">
       <Button
@@ -128,7 +138,6 @@ const props = defineProps({
 })
 
 const biensStore = useBiensStore()
-const notStore = useNotificationStore()
 
 const bien = ref<Bien>(props.b as Bien)
 const bien0 = JSON.parse(JSON.stringify(props.b)) as Bien

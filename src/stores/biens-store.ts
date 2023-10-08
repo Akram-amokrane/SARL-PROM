@@ -9,6 +9,8 @@ import type { BienFilter } from '@/models/Filters'
 
 export const useBiensStore = defineStore('biensStore', () => {
     const biens = ref<Bien[]>([])
+    const bienTypes = ref<BienType[]>([])
+    const bienEtats = ref<BienEtat[]>([])
     const biensService = new BiensService()
     const projectService = new ProjectService()
     const tableData = ref<RowData<Bien>[]>([])
@@ -47,6 +49,18 @@ export const useBiensStore = defineStore('biensStore', () => {
         })
     }
 
+    async function getAllBienType() {
+        biensService.getBienTypes().then((p) => {
+            bienTypes.value = p;
+        })
+    }
+
+    async function getAllBienEtat() {
+        biensService.getBienEtats().then((p) => {
+            bienEtats.value = p;
+        })
+    }
+
     async function filterBiens(filter: BienFilter) {
         biensService.filterBiens(filter).then((b) => {
             biens.value = b
@@ -77,7 +91,58 @@ export const useBiensStore = defineStore('biensStore', () => {
         await getAllBiens();
     }
 
+    async function addBienType(p: BienType) {
+        await biensService.addBienType(p)
+        await getAllBienType()
+    }
 
+    async function editBienType(p: BienType) {
+        await biensService.editBienType(p)
+        await getAllBienType();
+    }
 
-    return { tableData, selectedCount, projectOptions, search, getAllBiens, filterBiens, addBien, editBien, deleteBiens, toggleRowChecked, checkAll, getProjectsCombo }
+    async function deleteBienType(id: number) {
+        await biensService.deleteBienType(id);
+        await getAllBienType();
+    }
+
+    async function addBienEtat(p: BienEtat) {
+        await biensService.addBienEtat(p)
+        await getAllBienEtat()
+    }
+
+    async function editBienEtat(p: BienEtat) {
+        await biensService.editBienEtat(p)
+        await getAllBienEtat();
+    }
+
+    async function deleteBienEtat(id: number) {
+        await biensService.deleteBienEtat(id);
+        await getAllBienEtat();
+    }
+
+    return {
+        tableData,
+        selectedCount,
+        projectOptions,
+        bienTypes,
+        bienEtats,
+        search,
+        getAllBiens,
+        filterBiens,
+        addBien,
+        editBien,
+        deleteBiens,
+        toggleRowChecked,
+        checkAll,
+        getProjectsCombo,
+        getAllBienType,
+        editBienType,
+        addBienType,
+        deleteBienType,
+        getAllBienEtat,
+        editBienEtat,
+        deleteBienEtat,
+        addBienEtat
+    }
 })

@@ -77,7 +77,7 @@ export const useProjectsStore = defineStore('projectsStore', () => {
         await getAllProjectType()
     }
 
-    async function editProjectType(p: Project) {
+    async function editProjectType(p: ProjectType) {
         await projectService.editProjectType(p)
         await getAllProjectType();
     }
@@ -88,5 +88,5 @@ export const useProjectsStore = defineStore('projectsStore', () => {
     }
 
 
-    return { tableData, selectedCount, search, getAllProjects, filterProjects, addProject, editProject, deleteProjects, toggleRowChecked, checkAll, getAllProjectType, addProjectType, editProjectType, deleteProjectType }
+    return { tableData, selectedCount, projectTypes, search, getAllProjects, filterProjects, addProject, editProject, deleteProjects, toggleRowChecked, checkAll, getAllProjectType, addProjectType, editProjectType, deleteProjectType }
 })

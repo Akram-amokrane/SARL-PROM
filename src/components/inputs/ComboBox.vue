@@ -1,5 +1,5 @@
 <template>
-  <div role="combobox">
+  <div role="combobox" class="w-full">
     <label
       v-if="props.label"
       class="flex text-xs pl-1 font-semibold"
@@ -63,7 +63,7 @@
         <div
           class="w-full p-2 text-sm hover:bg-slate-200 cursor-pointer"
           v-for="opt in opts"
-          :key="opt.value"
+          :key="opt.value ? opt.value : opt.label"
           @click.stop="setSelectedOpt(opt)"
           role="option"
         >
@@ -92,7 +92,8 @@ const props = defineProps({
   placeholder: String,
   icon: { type: Boolean, default: false },
   required: { type: Boolean, default: false },
-  val: { type: Number }
+  val: { type: Number },
+  valstr: { type: String }
 })
 
 const emit = defineEmits(['update:value', 'update:isValid'])
@@ -106,13 +107,18 @@ const showSelection = ref(false)
 function setSelectedOpt(opt: ComboOption) {
   selectedOpt.value = opt
   showSelection.value = false
-  emit('update:value', selectedOpt.value.value)
+  emit('update:value', selectedOpt.value.value ? selectedOpt.value.value : selectedOpt.value.label)
   emit('update:isValid', true)
 }
 
 onMounted(() => {
   if (props.val) {
-    setSelectedOpt(opts.value.find((o) => o.value == props.val)!)
+    let x = opts.value.find((o) => o.value == props.val)
+    x ? setSelectedOpt(x) : null
+  }
+  if (props.valstr) {
+    let x = opts.value.find((o) => o.label == props.valstr)
+    x ? setSelectedOpt(x) : null
   }
 })
 </script>

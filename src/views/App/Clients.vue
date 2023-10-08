@@ -73,10 +73,15 @@
     <div
       class="w-16 h-full py-3 gap-4 bg-white dark:bg-gray-800 flex flex-col justify-start items-center drop-shadow-md absolute -right-2 rounded-l-lg"
     >
-      <ButtonIcon class="p-2 bg-green-100 dark:bg-green-800" @click="showAddDrawer()">
+      <ButtonIcon
+        :circle="true"
+        class="p-2 bg-green-100 dark:bg-green-800"
+        @click="showAddDrawer()"
+      >
         <AddIcon class="w-6 h-6 fill-green-600 dark:fill-green-200" />
       </ButtonIcon>
       <ButtonIcon
+        :circle="true"
         class="p-2 bg-red-100 dark:bg-red-800 relative"
         :disabled="clientsStore.selectedCount == 0"
         @click.stop="deleteClient()"

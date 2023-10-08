@@ -10,15 +10,26 @@
         v-model:is-valid="formValid.label"
       >
       </TextField>
-      <TextField
-        label="Type"
-        placeholder="Type X"
-        :validators="[minLength(3)]"
-        :required="true"
-        v-model:value="project.type"
-        v-model:is-valid="formValid.type"
-      >
-      </TextField>
+      <div class="flex gap-1 items-end">
+        <ComboBox
+          label="Type"
+          placeholder="type"
+          :options="projectsStore.projectTypes"
+          :required="true"
+          v-model:value="project.type"
+          v-model:is-valid="formValid.type"
+        ></ComboBox>
+        <Modal id="projects-type-modal">
+          <template #toggle-button>
+            <ButtonIcon
+              class="p-2 bg-slate-200 rounded-md hover:bg-orange-100 hover:text-orange-500 text-slate-600 duration-200"
+            >
+              <PencilSquareIcon class="w-6 h-6" />
+            </ButtonIcon>
+          </template>
+          <ProjectTypeForm />
+        </Modal>
+      </div>
       <TextArea
         label="Description"
         placeholder="Le projet est ..."
@@ -51,9 +62,14 @@ import { minLength } from '@/utils/validators'
 import TextField from '../inputs/TextField.vue'
 import TextArea from '../inputs/TextArea.vue'
 import Button from '../buttons/Button.vue'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import Project from '@/models/Project'
 import { useProjectsStore } from '@/stores/projects-store'
+import Modal from '@/layouts/Modal.vue'
+import ButtonIcon from '../buttons/ButtonIcon.vue'
+import { PencilSquareIcon, type PencilIcon } from '@heroicons/vue/24/outline'
+import ProjectTypeForm from './ProjectTypeForm.vue'
+import ComboBox from '../inputs/ComboBox.vue'
 
 const projectsStore = useProjectsStore()
 
@@ -94,4 +110,8 @@ async function saveClient() {
     })
   }
 }
+
+onMounted(() => {
+  projectsStore.getAllProjectType()
+})
 </script>

@@ -115,7 +115,7 @@ export default class ProjectService {
     async deleteProjectType(id: number) {
         await this.dbStore.connect()
         await this.dbStore.db?.execute(
-            `DELETE FROM project_types WHERE label=$1`,
+            `DELETE FROM project_types WHERE id=$1`,
             [id]
         )
             .then(() => {
@@ -130,7 +130,7 @@ export default class ProjectService {
     async editProjectType(p: ProjectType) {
         await this.dbStore.connect()
         await this.dbStore.db?.execute(
-            `UPDATE project_types SET label=$1 WHERE id=$4`,
+            `UPDATE project_types SET label=$1 WHERE id=$2`,
             [p.label, p.id]
         )
             .then(() => {

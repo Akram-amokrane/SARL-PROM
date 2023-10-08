@@ -20,6 +20,7 @@
       <input
         type="text"
         :placeholder="props.placeholder"
+        :readonly="readOnly"
         class="w-full border-0 dark:focus:bg-slate-600 text-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400 rounded-md focus:border focus:border-blue-600 dark:border-blue-800"
         :class="{
           'pl-9': props.icon,
@@ -60,7 +61,8 @@ const props = defineProps({
   required: { type: Boolean, default: false },
   icon: { type: Boolean, default: false },
   validators: { type: Array<(v: string) => IValidator>, default: [] },
-  value: { type: String, default: '' }
+  value: { type: String, default: '' },
+  readOnly: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['update:value', 'update:isValid'])

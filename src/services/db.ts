@@ -38,7 +38,7 @@ export default class DBCreator {
         });
     }
 
-    // Create Projects Table
+    // Create Projects types Table
     async createProjectsTypeTable() {
         const query = `CREATE TABLE IF NOT EXISTS project_types (
             id INTEGER  PRIMARY KEY,
@@ -72,6 +72,28 @@ export default class DBCreator {
         })
     }
 
+    // Create Projects Table
+    async createBiensTypeTable() {
+        const query = `CREATE TABLE IF NOT EXISTS bien_types (
+            id INTEGER  PRIMARY KEY,
+            label TEXT NOT NULL UNIQUE
+        );`;
+        await this.dbStore.db?.execute(query).catch((e) => {
+            console.error(e);
+        });
+    }
+
+    async createBiensEtatTable() {
+        const query = `CREATE TABLE IF NOT EXISTS bien_etats (
+            id INTEGER  PRIMARY KEY,
+            label TEXT NOT NULL UNIQUE,
+            color TEXT
+        );`;
+        await this.dbStore.db?.execute(query).catch((e) => {
+            console.error(e);
+        });
+    }
+
 
 
     async createAllTables() {
@@ -79,6 +101,8 @@ export default class DBCreator {
         await this.createProjectsTable();
         await this.createProjectsTypeTable()
         await this.createBiensTable();
+        await this.createBiensTypeTable()
+        await this.createBiensEtatTable()
     }
 
 

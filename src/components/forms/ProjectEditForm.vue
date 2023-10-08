@@ -10,15 +10,15 @@
         v-model:is-valid="formValid.label"
       >
       </TextField>
-      <TextField
+      <ComboBox
         label="Type"
-        placeholder="Type X"
-        :validators="[minLength(3)]"
+        placeholder="type"
+        :options="projectsStore.projectTypes"
         :required="true"
         v-model:value="project.type"
         v-model:is-valid="formValid.type"
-      >
-      </TextField>
+        :valstr="project.type"
+      ></ComboBox>
       <TextArea
         label="Description"
         placeholder="Le projet est ..."
@@ -54,6 +54,7 @@ import Button from '../buttons/Button.vue'
 import { onMounted, onUpdated, ref, watch } from 'vue'
 import Project from '@/models/Project'
 import { useProjectsStore } from '@/stores/projects-store'
+import ComboBox from '../inputs/ComboBox.vue'
 
 const props = defineProps({
   p: { type: Object, required: true }

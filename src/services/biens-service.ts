@@ -48,7 +48,7 @@ export default class BiensService {
         await this.dbStore.db?.execute(
             `INSERT INTO biens(projectId,ilot,lot,bloc,port,etage,type,supHab,supUtil,coutM2,montant,etat)
              VAlUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
-            [b.projectId, b.ilot, b.lot, b.bloc, b.port, b.etage, b.type, b.supHab, b.supUtil, b.coutM2, b.montant, "Disponible"]
+            [b.projectId, b.ilot, b.lot, b.bloc, b.port, b.etage, b.type, b.supHab, b.supUtil, b.coutM2, b.montant, b.etat]
         )
             .then(() => {
                 this.notification.show(`Bien ajouter avec succés.`, "Succes")
@@ -89,6 +89,108 @@ export default class BiensService {
         await this.dbStore.disconnect()
     }
 
+    async getBienTypes(): Promise<BienType[]> {
+        await this.dbStore.connect()
+        const val = await this.dbStore.db?.select<BienType[]>(`SELECT * FROM bien_types`, [])
+        await this.dbStore.disconnect()
+        return Promise.resolve<BienType[]>(val ?? [])
+    }
 
+    async addBienType(p: BienType) {
+        await this.dbStore.connect()
+        await this.dbStore.db?.execute(
+            `INSERT INTO bien_types(label) VAlUES ($1)`,
+            [p.label]
+        )
+            .then(() => {
+                this.notification.show(`Type de bien < ${p.label} > ajouter avec succés.`, "Succes")
+            })
+            .catch((e: Error) => {
+                this.notification.show(e.message, "Error")
+            })
+        await this.dbStore.disconnect()
+    }
+
+    async deleteBienType(id: number) {
+        await this.dbStore.connect()
+        await this.dbStore.db?.execute(
+            `DELETE FROM bien_types WHERE id=$1`,
+            [id]
+        )
+            .then(() => {
+                this.notification.show(`Type de bien supprimer avec succés.`, "Succes")
+            })
+            .catch((e: Error) => {
+                this.notification.show(e.message, "Error")
+            })
+        await this.dbStore.disconnect()
+    }
+
+    async editBienType(p: BienType) {
+        await this.dbStore.connect()
+        await this.dbStore.db?.execute(
+            `UPDATE bien_types SET label=$1 WHERE id=$2`,
+            [p.label, p.id]
+        )
+            .then(() => {
+                this.notification.show(`Type de bien modifier avec succés.`, "Succes")
+            })
+            .catch((e: Error) => {
+                this.notification.show(e.message, "Error")
+            })
+        await this.dbStore.disconnect()
+    }
+
+    async getBienEtats(): Promise<BienEtat[]> {
+        await this.dbStore.connect()
+        const val = await this.dbStore.db?.select<BienEtat[]>(`SELECT * FROM bien_etats`, [])
+        await this.dbStore.disconnect()
+        return Promise.resolve<BienEtat[]>(val ?? [])
+    }
+
+    async addBienEtat(p: BienEtat) {
+        await this.dbStore.connect()
+        await this.dbStore.db?.execute(
+            `INSERT INTO bien_etats(label,color) VAlUES ($1,$2)`,
+            [p.label, p.color]
+        )
+            .then(() => {
+                this.notification.show(`Etat de bien < ${p.label} > ajouter avec succés.`, "Succes")
+            })
+            .catch((e: Error) => {
+                this.notification.show(e.message, "Error")
+            })
+        await this.dbStore.disconnect()
+    }
+
+    async deleteBienEtat(id: number) {
+        await this.dbStore.connect()
+        await this.dbStore.db?.execute(
+            `DELETE FROM bien_etats WHERE id=$1`,
+            [id]
+        )
+            .then(() => {
+                this.notification.show(`Etat de bien supprimer avec succés.`, "Succes")
+            })
+            .catch((e: Error) => {
+                this.notification.show(e.message, "Error")
+            })
+        await this.dbStore.disconnect()
+    }
+
+    async editBienEtat(p: BienEtat) {
+        await this.dbStore.connect()
+        await this.dbStore.db?.execute(
+            `UPDATE bien_etats SET label=$1,color=$2 WHERE id=$3`,
+            [p.label, p.color, p.id]
+        )
+            .then(() => {
+                this.notification.show(`Etat de bien modifier avec succés.`, "Succes")
+            })
+            .catch((e: Error) => {
+                this.notification.show(e.message, "Error")
+            })
+        await this.dbStore.disconnect()
+    }
 
 }

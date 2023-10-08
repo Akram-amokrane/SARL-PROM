@@ -51,14 +51,27 @@
         >
         </NumberField>
       </div>
-      <TextField
-        label="Type"
-        placeholder=""
-        :required="true"
-        v-model:value="bien.type"
-        v-model:is-valid="formValid.type"
-      >
-      </TextField>
+
+      <div class="w-full flex items-end gap-1">
+        <ComboBox
+          label="Type"
+          placeholder="appartement"
+          :options="biensStore.bienTypes"
+          :required="true"
+          v-model:value="bien.type"
+          v-model:is-valid="formValid.type"
+        ></ComboBox>
+        <Modal id="projects-type-modal">
+          <template #toggle-button>
+            <ButtonIcon
+              class="p-2 bg-slate-200 rounded-md hover:bg-orange-100 hover:text-orange-500 text-slate-600 duration-200"
+            >
+              <PencilSquareIcon class="w-6 h-6" />
+            </ButtonIcon>
+          </template>
+          <BienTypeForm />
+        </Modal>
+      </div>
       <NumberField
         label="Superficier Habitable"
         placeholder=""
@@ -91,6 +104,26 @@
         v-model:is-valid="formValid.coutM2"
       >
       </NumberField>
+      <div class="w-full flex items-end gap-1">
+        <ComboBox
+          label="Etat"
+          placeholder="Dispobile"
+          :options="biensStore.bienEtats"
+          :required="true"
+          v-model:value="bien.etat"
+          v-model:is-valid="formValid.etat"
+        ></ComboBox>
+        <Modal id="projects-type-modal">
+          <template #toggle-button>
+            <ButtonIcon
+              class="p-2 bg-slate-200 rounded-md hover:bg-orange-100 hover:text-orange-500 text-slate-600 duration-200"
+            >
+              <PencilSquareIcon class="w-6 h-6" />
+            </ButtonIcon>
+          </template>
+          <BienEtatForm />
+        </Modal>
+      </div>
     </div>
     <div class="w-full flex justify-center items-center gap-3 p-3 mt-2">
       <Button
@@ -121,10 +154,15 @@ import Button from '../buttons/Button.vue'
 import { onMounted, ref, watch } from 'vue'
 import Bien from '@/models/Bien'
 import { useBiensStore } from '@/stores/biens-store'
+import Modal from '@/layouts/Modal.vue'
+import ButtonIcon from '../buttons/ButtonIcon.vue'
+import BienTypeForm from './BienTypeForm.vue'
+import { PencilSquareIcon } from '@heroicons/vue/24/outline'
+import BienEtatForm from './BienEtatForm.vue'
 
 const biensStore = useBiensStore()
 
-const bien = ref<Bien>({ etat: 'Disponible' })
+const bien = ref<Bien>({})
 const formValid = ref({
   projectId: false,
   ilot: false,
@@ -137,7 +175,7 @@ const formValid = ref({
   supUtil: false,
   coutM2: false,
   montant: false,
-  etat: true
+  etat: false
 })
 
 function resetForm() {
@@ -155,7 +193,7 @@ function resetForm() {
     supUtil: false,
     coutM2: false,
     montant: false,
-    etat: true
+    etat: false
   }
 }
 
@@ -198,5 +236,6 @@ async function saveBien() {
 
 onMounted(() => {
   biensStore.getProjectsCombo()
+  biensStore.getAllBienEtat()
 })
 </script>
