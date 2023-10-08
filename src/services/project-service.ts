@@ -90,6 +90,56 @@ export default class ProjectService {
         await this.dbStore.disconnect()
     }
 
+    async getPorjectsTypes(): Promise<ProjectType[]> {
+        await this.dbStore.connect()
+        const val = await this.dbStore.db?.select<ProjectType[]>(`SELECT * FROM project_types`, [])
+        await this.dbStore.disconnect()
+        return Promise.resolve<ProjectType[]>(val ?? [])
+    }
 
+    async addProjectType(p: ProjectType) {
+        await this.dbStore.connect()
+        await this.dbStore.db?.execute(
+            `INSERT INTO project_types(label) VAlUES ($1)`,
+            [p.label]
+        )
+            .then(() => {
+                this.notification.show(`Type de projet < ${p.label} > ajouter avec succés.`, "Succes")
+            })
+            .catch((e: Error) => {
+                this.notification.show(e.message, "Error")
+            })
+        await this.dbStore.disconnect()
+    }
+
+    async deleteProjectType(id: number) {
+        await this.dbStore.connect()
+        await this.dbStore.db?.execute(
+            `DELETE FROM project_types WHERE label=$1`,
+            [id]
+        )
+            .then(() => {
+                this.notification.show(`Type de Projet supprimer avec succés.`, "Succes")
+            })
+            .catch((e: Error) => {
+                this.notification.show(e.message, "Error")
+            })
+        await this.dbStore.disconnect()
+    }
+
+    async editProjectType(p: ProjectType) {
+        await this.dbStore.connect()
+        await this.dbStore.db?.execute(
+            `UPDATE project_types SET label=$1 WHERE id=$4`,
+            [p.label, p.id]
+        )
+            .then(() => {
+                this.notification.show(`Type de projet modifier avec succés.`, "Succes")
+            })
+            .catch((e: Error) => {
+                this.notification.show(e.message, "Error")
+            })
+        await this.dbStore.disconnect()
+    }
 
 }

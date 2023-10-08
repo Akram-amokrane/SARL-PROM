@@ -38,6 +38,17 @@ export default class DBCreator {
         });
     }
 
+    // Create Projects Table
+    async createProjectsTypeTable() {
+        const query = `CREATE TABLE IF NOT EXISTS project_types (
+            id INTEGER  PRIMARY KEY,
+            label TEXT NOT NULL UNIQUE
+        );`;
+        await this.dbStore.db?.execute(query).catch((e) => {
+            console.error(e);
+        });
+    }
+
     // Create Biens Table
     async createBiensTable() {
         const query = `CREATE TABLE IF NOT EXISTS biens (
@@ -66,6 +77,7 @@ export default class DBCreator {
     async createAllTables() {
         await this.createClientsTable();
         await this.createProjectsTable();
+        await this.createProjectsTypeTable()
         await this.createBiensTable();
     }
 

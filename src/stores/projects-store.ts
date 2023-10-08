@@ -7,6 +7,7 @@ import type { ProjectFilter } from '@/models/Filters'
 
 export const useProjectsStore = defineStore('projectsStore', () => {
     const projects = ref<Project[]>([])
+    const projectTypes = ref<ProjectType[]>([])
     const projectService = new ProjectService()
     const tableData = ref<RowData<Project>[]>([])
     const selectedCount = computed(() => (tableData.value.filter((row) => row.checked)).length)
@@ -42,6 +43,12 @@ export const useProjectsStore = defineStore('projectsStore', () => {
         })
     }
 
+    async function getAllProjectType() {
+        projectService.getPorjectsTypes().then((p) => {
+            projectTypes.value = p;
+        })
+    }
+
     function filterProjects(filter: ProjectFilter) {
         projectService.filterProjects(filter).then((b) => {
             projects.value = b
@@ -65,6 +72,21 @@ export const useProjectsStore = defineStore('projectsStore', () => {
         await getAllProjects();
     }
 
+    async function addProjectType(p: ProjectType) {
+        await projectService.addProjectType(p)
+        await getAllProjectType()
+    }
 
-    return { tableData, selectedCount, search, getAllProjects, filterProjects, addProject, editProject, deleteProjects, toggleRowChecked, checkAll }
+    async function editProjectType(p: Project) {
+        await projectService.editProjectType(p)
+        await getAllProjectType();
+    }
+
+    async function deleteProjectType(id: number) {
+        await projectService.deleteProjectType(id);
+        await getAllProjectType();
+    }
+
+
+    return { tableData, selectedCount, search, getAllProjects, filterProjects, addProject, editProject, deleteProjects, toggleRowChecked, checkAll, getAllProjectType, addProjectType, editProjectType, deleteProjectType }
 })
