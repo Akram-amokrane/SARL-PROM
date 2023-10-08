@@ -31,13 +31,15 @@ export default class BiensService {
                 AND  ${f.bloc ? `bloc='%${f.bloc}%'` : 1}
                 AND  ${f.port ? `port=${f.port}` : 1}
                 AND  ${f.etage ? `etage=${f.etage}` : 1}
-                AND  ${f.type ? `type LIKE '%${f.type}%'` : 1}
+                AND  ${f.type ? `biens.type LIKE '${f.type}%'` : 1}
+                AND  ${f.etat ? `biens.etat LIKE '${f.etat}%'` : 1}
                 AND  ${f.SupHab.min ? `supHab>=${f.SupHab.min}` : 1} AND ${f.SupHab.max ? `supHab<=${f.SupHab.max}` : 1}
                 AND  ${f.coutM2.min ? `coutM2>=${f.coutM2.min}` : 1} AND ${f.coutM2.max ? `coutM2<=${f.coutM2.max}` : 1}
                 AND  ${f.montant.min ? `montant>=${f.montant.min}` : 1} AND ${f.montant.max ? `montant<=${f.montant.max}` : 1}`,
             []
         ).catch((e: Error) => {
             this.notification.show(e.message, "Error")
+            console.error(e)
         })
         await this.dbStore.disconnect()
         return Promise.resolve<Bien[]>(val ?? [])
@@ -48,7 +50,7 @@ export default class BiensService {
         await this.dbStore.db?.execute(
             `INSERT INTO biens(projectId,ilot,lot,bloc,port,etage,type,supHab,supUtil,coutM2,montant,etat)
              VAlUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
-            [b.projectId, b.ilot, b.lot, b.bloc, b.port, b.etage, b.type, b.supHab, b.supUtil, b.coutM2, b.montant, b.etat]
+            [b.projectId, b.ilot, b.lot, b.bloc?.trim().toLowerCase(), b.port, b.etage, b.type?.trim().toLowerCase(), b.supHab, b.supUtil, b.coutM2, b.montant, b.etat?.trim().toLowerCase()]
         )
             .then(() => {
                 this.notification.show(`Bien ajouter avec succés.`, "Succes")
@@ -63,7 +65,7 @@ export default class BiensService {
         await this.dbStore.connect()
         await this.dbStore.db?.execute(
             `UPDATE biens SET projectId=$1,ilot=$2,lot=$3,bloc=$4,port=$5,etage=$6,type=$7,supHab=$8,supUtil=$9,coutM2=$10,montant=$11,etat=$12 WHERE id=$13`,
-            [b.projectId, b.ilot, b.lot, b.bloc, b.port, b.etage, b.type, b.supHab, b.supUtil, b.coutM2, b.montant, b.etat, b.id]
+            [b.projectId, b.ilot, b.lot, b.bloc?.trim().toLowerCase(), b.port, b.etage, b.type?.trim().toLowerCase(), b.supHab, b.supUtil, b.coutM2, b.montant, b.etat?.trim().toLowerCase(), b.id]
         )
             .then(() => {
                 this.notification.show(`Bien modifier avec succés.`, "Succes")
@@ -100,7 +102,7 @@ export default class BiensService {
         await this.dbStore.connect()
         await this.dbStore.db?.execute(
             `INSERT INTO bien_types(label) VAlUES ($1)`,
-            [p.label]
+            [p.label?.trim().toLowerCase()]
         )
             .then(() => {
                 this.notification.show(`Type de bien < ${p.label} > ajouter avec succés.`, "Succes")
@@ -130,7 +132,7 @@ export default class BiensService {
         await this.dbStore.connect()
         await this.dbStore.db?.execute(
             `UPDATE bien_types SET label=$1 WHERE id=$2`,
-            [p.label, p.id]
+            [p.label?.trim().toLowerCase(), p.id]
         )
             .then(() => {
                 this.notification.show(`Type de bien modifier avec succés.`, "Succes")
@@ -152,7 +154,7 @@ export default class BiensService {
         await this.dbStore.connect()
         await this.dbStore.db?.execute(
             `INSERT INTO bien_etats(label,color) VAlUES ($1,$2)`,
-            [p.label, p.color]
+            [p.label?.trim().toLowerCase(), p.color?.trim().toLowerCase()]
         )
             .then(() => {
                 this.notification.show(`Etat de bien < ${p.label} > ajouter avec succés.`, "Succes")
@@ -182,7 +184,7 @@ export default class BiensService {
         await this.dbStore.connect()
         await this.dbStore.db?.execute(
             `UPDATE bien_etats SET label=$1,color=$2 WHERE id=$3`,
-            [p.label, p.color, p.id]
+            [p.label?.trim().toLowerCase(), p.color?.trim().toLowerCase(), p.id]
         )
             .then(() => {
                 this.notification.show(`Etat de bien modifier avec succés.`, "Succes")

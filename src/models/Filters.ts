@@ -3,12 +3,13 @@ export class BienFilter {
     ilot?: number;
     lot?: number;
     bloc?: string;
+    etat?: string;
     port?: number;
     etage?: number;
-    type?: number;
+    type?: string;
     SupHab: { min?: number, max?: number } = { min: undefined, max: undefined };
     coutM2: { min?: number, max?: number } = { min: undefined, max: undefined };
-    montant: { min?: number, max?: number } = { min: undefined, max: undefined }
+    montant: { min?: number, max?: number } = { min: undefined, max: undefined };
 }
 
 export class ProjectFilter {

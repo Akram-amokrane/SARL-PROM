@@ -49,7 +49,7 @@ export default class ProjectService {
         await this.dbStore.connect()
         await this.dbStore.db?.execute(
             `INSERT INTO projects(label,type,description) VAlUES ($1,$2,$3)`,
-            [p.label, p.type, p.description]
+            [p.label?.trim().toLowerCase(), p.type?.trim().toLowerCase(), p.description?.trim().toLowerCase()]
         )
             .then(() => {
                 this.notification.show(`Projet ${p.label} ajouter avec succés.`, "Succes")
@@ -64,7 +64,7 @@ export default class ProjectService {
         await this.dbStore.connect()
         await this.dbStore.db?.execute(
             `UPDATE projects SET label=$1,type=$2,description=$3 WHERE id=$4`,
-            [p.label, p.type, p.description, p.id]
+            [p.label?.trim().toLowerCase(), p.type?.trim().toLowerCase(), p.description?.trim().toLowerCase(), p.id]
         )
             .then(() => {
                 this.notification.show(`Projet modifier avec succés.`, "Succes")
@@ -101,7 +101,7 @@ export default class ProjectService {
         await this.dbStore.connect()
         await this.dbStore.db?.execute(
             `INSERT INTO project_types(label) VAlUES ($1)`,
-            [p.label]
+            [p.label?.trim().toLowerCase()]
         )
             .then(() => {
                 this.notification.show(`Type de projet < ${p.label} > ajouter avec succés.`, "Succes")
@@ -131,7 +131,7 @@ export default class ProjectService {
         await this.dbStore.connect()
         await this.dbStore.db?.execute(
             `UPDATE project_types SET label=$1 WHERE id=$2`,
-            [p.label, p.id]
+            [p.label?.trim().toLowerCase(), p.id]
         )
             .then(() => {
                 this.notification.show(`Type de projet modifier avec succés.`, "Succes")

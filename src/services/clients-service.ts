@@ -38,7 +38,7 @@ export default class ClientsService {
         await this.dbStore.db?.execute(
             `INSERT INTO clients(nom,prenom,dateNaissance,lieuNaissance,adresse,telephone,email,note)
              VAlUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
-            [c.nom, c.prenom, c.dateNaissance, c.lieuNaissance, c.adresse, c.telephone, c.email, c.note]
+            [c.nom?.trim().toLowerCase(), c.prenom?.trim().toLowerCase(), c.dateNaissance?.trim().toLowerCase(), c.lieuNaissance?.trim().toLowerCase(), c.adresse?.trim().toLowerCase(), c.telephone?.trim().toLowerCase(), c.email?.trim().toLowerCase(), c.note?.trim().toLowerCase()]
         )
             .then(() => {
                 this.notification.show(`Client ajouter avec succés.`, "Succes")
@@ -53,7 +53,7 @@ export default class ClientsService {
         await this.dbStore.connect()
         await this.dbStore.db?.execute(
             `UPDATE clients SET nom=$1,prenom=$2,dateNaissance=$3,lieuNaissance=$4,adresse=$5,telephone=$6,email=$7,note=$8 WHERE id=$9`,
-            [c.nom, c.prenom, c.dateNaissance, c.lieuNaissance, c.adresse, c.telephone, c.email, c.note, c.id]
+            [c.nom?.trim().toLowerCase(), c.prenom?.trim().toLowerCase(), c.dateNaissance?.trim().toLowerCase(), c.lieuNaissance?.trim().toLowerCase(), c.adresse?.trim().toLowerCase(), c.telephone?.trim().toLowerCase(), c.email?.trim().toLowerCase(), c.note?.trim().toLowerCase(), c.id]
         )
             .then(() => {
                 this.notification.show(`Client modifier avec succés.`, "Succes")

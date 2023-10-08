@@ -23,9 +23,10 @@
         <NumberField label="Etage" placeholder="0" v-model:value="filters.etage"></NumberField>
       </div>
       <ComboBox
+        v-show="biensStore.bienTypes.length > 0"
         label="Type"
-        :options="biensStore.projectOptions"
-        placeholder="Projet"
+        :options="[{ label: 'Tout', value: undefined }, ...biensStore.bienTypes]"
+        placeholder="Type"
         v-model:value="filters.type"
       ></ComboBox>
       <div class="flex gap-1">
@@ -52,6 +53,13 @@
         ></NumberField>
         <NumberField label="‎" placeholder="max" v-model:value="filters.montant.max"></NumberField>
       </div>
+      <ComboBox
+        v-show="biensStore.bienEtats.length > 0"
+        label="Etat"
+        :options="[{ label: 'Tout', value: undefined }, ...biensStore.bienEtats]"
+        placeholder="Etat"
+        v-model:value="filters.etat"
+      ></ComboBox>
     </div>
   </Filter>
 </template>
